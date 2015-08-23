@@ -1,4 +1,6 @@
 
+needs utils/settings
+
 var sock
 var connected
 var ai
@@ -7,6 +9,7 @@ var runFlag
 
 : init
     buffer @ 0 = if
+        "power" appname !
         true runFlag !
         255 b:new buffer !
 
@@ -36,7 +39,10 @@ var runFlag
     sock @ net:accept connected !
     
     connected @ "CONNECTED\n" net:write \ sock count
-    2drop \ --
+    drop \ sock
+    "hostname" settings@ "\n" + net:write \ sock count
+    drop
+    "\r\n" settings@ net:write 2drop
 
     true 
     repeat
