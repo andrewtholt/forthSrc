@@ -1,0 +1,49 @@
+
+var sock
+var connected
+var ai
+var buffer
+var runFlag
+
+: init
+    buffer @ 0 = if
+        true runFlag !
+        255 b:new buffer !
+
+        net:INET4 net:STREAM net:socket sock !
+    then
+;
+
+: reader
+    connected @ buffer @ 255 net:read nip \ count
+    0 = if \ sock
+        false runFlag !
+    else
+        true runFlag !
+        cr
+        buffer . cr
+    then
+;
+
+: tst
+    init
+    "192.168.100.1" "frox" net:getaddrinfo ai !
+    
+    ai @ sock @ net:bind
+    
+    sock @ net:listen
+    
+    sock @ net:accept connected !
+    
+    connected @ "CONNECTED\n" net:write \ sock count
+    2drop \ --
+
+    true 
+    repeat
+        drop
+        reader
+        runFlag @
+    while
+
+;
+
