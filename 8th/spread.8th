@@ -1,0 +1,49 @@
+var myStdin
+var myStdout
+false var, inited
+
+: init
+    inited @ not if
+        "Initialising ...\n" .
+        "/tmp/fred.0" dup f:exists? if
+            f:open myStdin !
+        else
+            " Does not exist.\n" + .
+            2 die
+        then
+    
+        "/tmp/fred.1" dup f:exists? if
+            f:open myStdout !
+        else
+            " Does not exist.\n" + .
+            3 die
+        then
+        true inited !
+        "... done.\n" .
+    then
+;
+
+: sendCommand \ s --
+    "\n" +   \ Add cr   : s ---
+    myStdin @ swap \ f s 
+    f:write drop
+    f:flush drop
+;
+
+: readMessage \ -- s
+    myStdout @ f:getline nip
+;
+
+
+
+: main
+    init
+
+    readMessage . cr
+
+    "^connect" sendCommand
+
+    readMessage . cr
+;
+
+
