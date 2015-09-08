@@ -218,3 +218,9 @@ create (newline) 1 c, 10 c,
 : cell 1 cells ;
 
 : char 1 chars ;
+
+: uint8_t 1 chars ;
+
+: uint16_t 2 chars ;
+
+: uint32_t 4 chars ;
