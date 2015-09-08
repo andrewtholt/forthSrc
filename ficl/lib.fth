@@ -224,3 +224,13 @@ create (newline) 1 c, 10 c,
 : uint16_t 2 chars ;
 
 : uint32_t 4 chars ;
+\ 
+\ Usage:  xt alias name
+\ e.g.  ' words alias vlist
+\ 
+: alias
+    create
+        , 
+    does>
+        @ execute
+;
