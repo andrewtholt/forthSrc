@@ -7,7 +7,7 @@ s" POSIX_IPC" environment? 0= abort" POSIX_IPC Not available" drop
 
 : init
     initRun 0= if
-        s" /STMSupervisor" O_RDWR mq-open abort" mq_open" to mqd
+        s" /STMListen" O_RDWR mq-open abort" mq_open" to mqd
         -1 to initRun
 
         1024 allocate abort" Allocate failed." to buffer

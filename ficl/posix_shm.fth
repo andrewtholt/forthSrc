@@ -42,3 +42,10 @@ endstruct /STM
 
 ;
 
+: STM4Sent?
+    ptr STM4Sent drop 32@ 0<>
+;
+
+: STM9Sent?
+    ptr STM9Sent drop 32@ 0<>
+;
