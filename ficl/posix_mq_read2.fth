@@ -18,23 +18,21 @@ s" POSIX_IPC" environment? 0= abort" POSIX_IPC Not available" drop
 : main
     init
 
-    mqd MQ_CURMSGS mq-getattr abort" mq-getattr failed" 
-
-    ." Number of waiting messages:" . cr
 
     begin
-        ." Test" cr
-        mqd MQ_CURMSGS mq-getattr abort" mq-getattr failed"  0<>
-    while
-        ." Loop" cr
+        mqd MQ_CURMSGS mq-getattr abort" mq-getattr failed" 
+        ." Number of waiting messages:" . cr
 
-        mqd buffer 1024 0 1500 mq-timedrecv abort" mq-recv Failed." .s
+        mqd buffer 1024 0 5000 mq-timedrecv 0<> if
+            ." timed out." cr
+        else
 \        mqd buffer 1024 0 mq-recv abort" mq-recv Failed." 
 
-        buffer swap dump
+            buffer swap dump
         ." =====================================" cr
+        then
 \        1500 ms
-    repeat
+    again
 
     mqd mq-close abort" mq-close failed."
     buffer free  abort" free failed."
