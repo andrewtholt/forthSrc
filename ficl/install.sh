@@ -1,7 +1,7 @@
 #!/bin/sh
 DEST=/usr/local/lib/ficl
 
-FILES="dynamic.fth lib.fth struct.fth"
+FILES="dynamic.fth lib.fth struct.fth enum.fth"
 
 if [ ! -d $DEST ]; then
     echo "Making $DEST"
