@@ -7,7 +7,7 @@ does> ( c d )
  swap   ( c o d )
  cell+ @      ( c o s )
  -rot   ( s c o )
- + swap drop
+ + swap drop \ lose the length here, I always seem to drop this anyway.
 ;
 
 : field   ( offset size )
