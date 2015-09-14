@@ -7,7 +7,7 @@ does> ( c d )
  swap   ( c o d )
  cell+ @      ( c o s )
  -rot   ( s c o )
- + swap 
+ + swap drop
 ;
 
 : field   ( offset size )
