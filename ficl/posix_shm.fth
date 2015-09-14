@@ -30,12 +30,15 @@ endstruct /STM
     then
 ;
 
+: .semvalue ( semid -- )
+    sem-getvalue abort" sem-getvalue failed."
+    ." sem-getvalue : " . cr
+;
+
 : main
     init
-    semid sem-getvalue abort" sem-getvalue failed."
 
-    ." sem-getvalue : " . cr
-
+    semid .semvalue
     semid sem-wait abort" sem-wait failed."
     ptr 53 dump
     semid sem-post abort" sem-post failed."
