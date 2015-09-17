@@ -6,8 +6,12 @@ load struct.fth
 
 struct 
     uint8_t field state
+    uint32_t field STM1Sent
     uint32_t field STM4Sent
     uint32_t field STM9Sent
+    
+    
+    uint32_t field STM1Received
 endstruct /STM
 
 -1 value fd
@@ -43,12 +47,4 @@ endstruct /STM
     ptr 53 dump
     semid sem-post abort" sem-post failed."
 
-;
-
-: STM4Sent?
-    ptr STM4Sent drop 32@ 0<>
-;
-
-: STM9Sent?
-    ptr STM9Sent drop 32@ 0<>
 ;
