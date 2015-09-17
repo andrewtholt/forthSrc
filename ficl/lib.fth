@@ -224,6 +224,9 @@ create (newline) 1 c, 10 c,
 : uint16_t 2 chars ;
 
 : uint32_t 4 chars ;
+
+: uint64_t 8 chars ;
+
 \ 
 \ Usage:  xt alias name
 \ e.g.  ' words alias vlist
@@ -233,4 +236,16 @@ create (newline) 1 c, 10 c,
         , 
     does>
         @ execute
+;
+
+\ 
+\ Create constants from C include style define
+\
+\ e.g.
+\ #define MAGIC 0x42
+\
+: #define 
+    create 
+        bl parse evaluate , 
+    does> @ 
 ;
