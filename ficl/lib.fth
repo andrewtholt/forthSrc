@@ -249,3 +249,8 @@ create (newline) 1 c, 10 c,
         bl parse evaluate , 
     does> @ 
 ;
+
+
+: .boolean
+    if ." True" else ." False" then
+;
