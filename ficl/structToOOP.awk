@@ -17,8 +17,7 @@ function outputMethod( name ) {
 }
 BEGIN {
     CLASS=0
-    printf "( A few helpful aliases )\n\n"
-    printf "' \\ alias \/\/\n"
+    LENGTH=0
     printf "\n"
     print "only forth also oop definitions"
     printf "\n"
@@ -41,6 +40,7 @@ BEGIN {
 }
 /Boolean/ {
     if ( CLASS == 1 ) {
+        LENGTH = LENGTH + 4;
         TMP=substr($2, 0, length($2)-1)
         printf "    c-4byte obj: .%s\n",TMP
         list[TMP]=1
@@ -50,6 +50,7 @@ BEGIN {
 
 /char/ {
     if ( CLASS == 1 ) {
+        LENGTH++
         TMP=substr($2, 0, length($2)-1)
         printf "    c-byte obj: .%s\n",TMP
         list[TMP]=1
@@ -60,6 +61,7 @@ BEGIN {
 
 /uint8_t/ {
     if ( CLASS == 1 ) {
+        LENGTH++
         TMP=substr($2, 0, length($2)-1)
         printf "    c-byte obj: .%s\n",TMP
         list[TMP]=1
@@ -69,6 +71,7 @@ BEGIN {
 
 /uint16_t/ {
     if ( CLASS == 1 ) {
+        LENGTH=LENGTH+2
         TMP=substr($2, 0, length($2)-1)
         printf "    c-2byte obj: .%s\n",TMP
         list[TMP]=1
@@ -76,8 +79,20 @@ BEGIN {
     HIT=1
 }
 
+/uint32_t/ {
+    if ( CLASS == 1 ) {
+        LENGTH=LENGTH+4
+        TMP=substr($2, 0, length($2)-1)
+        printf "    c-4byte obj: .%s\n",TMP
+        list[TMP]=1
+    }
+    HIT=1
+}
+
+
 /int / {
     if ( CLASS == 1 ) {
+        LENGTH=LENGTH+4
         TMP=substr($2, 0, length($2)-1)
         printf "    c-4byte obj: .%s\n",TMP
         list[TMP]=1
@@ -91,6 +106,18 @@ BEGIN {
         for (key in list) {
             outputMethod( key )
         }
+        
+        printf "\t: init { 2:this }\n"
+        printf "\t\tthis drop %d erase\n",LENGTH
+        printf "\t\t%d this --> set-length\n",LENGTH
+        printf "\t;\n\n"
+        
+        printf "\t: display { 2:this }\n"
+        for (key in list) {
+            printf"\t\tthis --> print-%s\n", key
+        }
+        
+        printf "\t;\n\n"
         printf "end-class\n\n"
         delete list
         CLASS=0

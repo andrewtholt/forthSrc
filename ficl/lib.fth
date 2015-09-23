@@ -254,3 +254,8 @@ create (newline) 1 c, 10 c,
 : .boolean
     if ." True" else ." False" then
 ;
+\ 
+\ Treat C style // as a comment
+\ 
+' \ alias //
+

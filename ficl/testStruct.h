@@ -1,3 +1,7 @@
+/*
+ * Just a comment
+ * for fun.
+ */
 struct STM {
     STMState state;
 
