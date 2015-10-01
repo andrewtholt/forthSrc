@@ -30,7 +30,7 @@ BEGIN {
     HIT=1
 }
 
-/struct/ {
+/struct / {
     if ( CLASS != 1 ) {
         NAME=$2
         printf "object subclass c-%s\n",NAME
@@ -134,7 +134,7 @@ BEGIN {
     HIT=1
 }
 
-/\/\/ / {
+/\/\// {
     if ( HIT != 1 ) {
         printf "\\ %s\n", $0
     }
