@@ -7,7 +7,8 @@ s" POSIX_IPC" environment? 0= abort" POSIX_IPC Not available" drop
 
 : init
     initRun 0= if
-        s" /STMSend" O_RDWR mq-open abort" mq_open" to mqd
+\        s" /STMSend" O_RDWR mq-open abort" mq_open" to mqd
+        s" /Local" O_RDWR mq-open abort" mq_open" to mqd
         -1 to initRun
 
         1024 allocate abort" Allocate failed." to buffer
@@ -24,16 +25,20 @@ s" POSIX_IPC" environment? 0= abort" POSIX_IPC Not available" drop
 
     begin
         ." Test" cr
-        mqd MQ_CURMSGS mq-getattr abort" mq-getattr failed"  0<>
+\        mqd MQ_CURMSGS mq-getattr abort" mq-getattr failed"  0<>
+        -1
     while
         ." Loop" cr
 
-        mqd buffer 1024 0 1500 mq-timedrecv abort" mq-recv Failed." .s
-\        mqd buffer 1024 0 mq-recv abort" mq-recv Failed." 
+\        mqd buffer 1024 0 1500 mq-timedrecv abort" mq-recv Failed." .s
+        mqd buffer 1024 mq-recv abort" mq-recv Failed." 
+
+        swap
+        ." Priority : " . cr
 
         buffer swap dump
         ." =====================================" cr
-\        1500 ms
+        1500 ms
     repeat
 
     mqd mq-close abort" mq-close failed."
