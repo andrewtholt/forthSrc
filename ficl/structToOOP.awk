@@ -18,6 +18,7 @@ function outputMethod( name ) {
 BEGIN {
     CLASS=0
     LENGTH=0
+    COMMENT=0
     printf "\n"
     print "only forth also oop definitions"
     printf "\n"
@@ -27,19 +28,24 @@ BEGIN {
     HIT=0
 }
 /^$/ {
+    printf "\n"
     HIT=1
 }
 
 /struct / {
-    if ( CLASS != 1 ) {
+    if ( COMMENT == 1 ) {
+        printf "\\ %s\n",$0
+    } else if ( CLASS != 1 ) {
         NAME=$2
         printf "object subclass c-%s\n",NAME
         HIT=1
         CLASS=1
     }
 }
-/Boolean/ {
-    if ( CLASS == 1 ) {
+/Boolean / {
+    if ( COMMENT == 1 ) {
+        printf "\\ %s\n",$0
+    } else if ( CLASS == 1 ) {
         LENGTH = LENGTH + 4;
         TMP=substr($2, 0, length($2)-1)
         printf "    c-4byte obj: .%s\n",TMP
@@ -48,8 +54,22 @@ BEGIN {
     HIT=1
 }
 
-/char/ {
-    if ( CLASS == 1 ) {
+/bool / {
+    if ( COMMENT == 1 ) {
+        printf "\\ %s\n",$0
+    } else if ( CLASS == 1 ) {
+        LENGTH = LENGTH + 4;
+        TMP=substr($2, 0, length($2)-1)
+        printf "    c-byte obj: .%s\n",TMP
+        list[TMP]=1
+    }
+    HIT=1
+}
+
+/char / {
+    if ( COMMENT == 1 ) {
+        printf "\\ %s\n",$0
+    } else if ( CLASS == 1 ) {
         LENGTH++
         TMP=substr($2, 0, length($2)-1)
         printf "    c-byte obj: .%s\n",TMP
@@ -59,8 +79,10 @@ BEGIN {
 }
 
 
-/uint8_t/ {
-    if ( CLASS == 1 ) {
+/uint8_t / {
+    if ( COMMENT == 1 ) {
+        printf "\\ %s\n",$0
+    } else if ( CLASS == 1 ) {
         LENGTH++
         TMP=substr($2, 0, length($2)-1)
         printf "    c-byte obj: .%s\n",TMP
@@ -69,8 +91,10 @@ BEGIN {
     HIT=1
 }
 
-/uint16_t/ {
-    if ( CLASS == 1 ) {
+/uint16_t / {
+    if ( COMMENT == 1 ) {
+        printf "\\ %s\n",$0
+    } else if ( CLASS == 1 ) {
         LENGTH=LENGTH+2
         TMP=substr($2, 0, length($2)-1)
         printf "    c-2byte obj: .%s\n",TMP
@@ -79,8 +103,10 @@ BEGIN {
     HIT=1
 }
 
-/uint32_t/ {
-    if ( CLASS == 1 ) {
+/uint32_t / {
+    if ( COMMENT == 1 ) {
+        printf "\\ %s\n",$0
+    } else if ( CLASS == 1 ) {
         LENGTH=LENGTH+4
         TMP=substr($2, 0, length($2)-1)
         printf "    c-4byte obj: .%s\n",TMP
@@ -91,7 +117,9 @@ BEGIN {
 
 
 /int / {
-    if ( CLASS == 1 ) {
+    if ( COMMENT == 1 ) {
+        printf "\\ %s\n",$0
+    } else if ( CLASS == 1 ) {
         LENGTH=LENGTH+4
         TMP=substr($2, 0, length($2)-1)
         printf "    c-4byte obj: .%s\n",TMP
@@ -102,11 +130,18 @@ BEGIN {
 
 /};/ {
     if (CLASS == 1 ) {
+        printf "    c-byte obj: .LAST\n"
         printf "\n"
+
+        printf "\t: get-last ( 2:this -- addr )\n"
+        printf "\t\t--> .LAST drop\n"
+        printf "\t;\n\n"
+
         for (key in list) {
             outputMethod( key )
         }
         
+
         printf "\t: init { 2:this }\n"
         printf "\t\tthis drop %d erase\n",LENGTH
         printf "\t\t%d this --> set-length\n",LENGTH
@@ -126,10 +161,10 @@ BEGIN {
 }
 
 
-/#include/ {
+/#include / {
     HIT=1;
 }
-/#define/ {
+/#define / {
     print $0
     HIT=1
 }
@@ -141,8 +176,18 @@ BEGIN {
     HIT=1
 }
 
+/\/\*/ {
+    HIT=1
+    COMMENT=1
+}
+
+/\*\// {
+    HIT=1
+    COMMENT=0
+}
+
 {
-    if (HIT == 0) {
+    if (HIT == 0 && COMMENT == 0 ) {
         print "\\ FIX ME " $0
     }
     HIT=0
