@@ -33,6 +33,16 @@ create mask 1 , 2 , 4 , 8 , 0x10 , 0x20 , 0x40 , 0x80 , 0x100 , 0x200 , 0x400 , 
 \ mask for 8 bit values
 \
 create bmask 0x01 c, 0x02 c, 0x04 c, 0x08 c, 0x10 c, 0x20 c, 0x40 c, 0x80 c,
+\ 
+\ Round up to the next cell boundary
+\
+: upcell ( n -- n1 )
+    1 cells \ n c
+    dup     \ n c c
+    -rot    \ c n c
+    /       \ c d
+    1+ *    \ n1
+;
 \
 \ Print the top of the stack in hex, irrespective of the system base.
 \
