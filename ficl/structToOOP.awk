@@ -1,5 +1,10 @@
 #!/usr/bin/awk -f
 
+function align( o, a) {
+    n=((int(o/a))+1)*a
+    return n
+}
+
 function outputMethod( name ) {
     printf "\t: get-%s ( 2:this )\n", name
     printf "\t\t--> .%s --> get\n",name
@@ -19,6 +24,9 @@ BEGIN {
     CLASS=0
     LENGTH=0
     COMMENT=0
+    OFFSET=0
+    PTR=0
+
     printf "\n"
     print "only forth also oop definitions"
     printf "\n"
@@ -83,10 +91,16 @@ BEGIN {
     if ( COMMENT == 1 ) {
         printf "\\ %s\n",$0
     } else if ( CLASS == 1 ) {
-        LENGTH++
+        PTR++
+        printf "\\ uint8_t\n"
+        printf "\\ OFFSET=%d\n",OFFSET
+        printf "\\ PTR   =%d\n",PTR   
+#        LENGTH++
         TMP=substr($2, 0, length($2)-1)
         printf "    c-byte obj: .%s\n",TMP
+        printf "\\ --------------------------\n"
         list[TMP]=1
+        OFFSET++
     }
     HIT=1
 }
@@ -95,10 +109,23 @@ BEGIN {
     if ( COMMENT == 1 ) {
         printf "\\ %s\n",$0
     } else if ( CLASS == 1 ) {
-        LENGTH=LENGTH+2
+        OFFSET=align(OFFSET,2)
+
+        if( OFFSET > PTR ) {
+            printf("\\ PAD   =%d\n", OFFSET-PTR)
+            PTR=OFFSET
+        } else {
+            PTR = PTR + 2
+        }
+        printf "\\ uint16_t\n"
+        printf "\\ OFFSET=%d\n",OFFSET
+        printf "\\ PTR   =%d\n",PTR   
+#        LENGTH=LENGTH+2
         TMP=substr($2, 0, length($2)-1)
         printf "    c-2byte obj: .%s\n",TMP
+        printf "\\ --------------------------\n"
         list[TMP]=1
+        OFFSET=OFFSET+2
     }
     HIT=1
 }
@@ -107,9 +134,14 @@ BEGIN {
     if ( COMMENT == 1 ) {
         printf "\\ %s\n",$0
     } else if ( CLASS == 1 ) {
-        LENGTH=LENGTH+4
+        OFFSET=align(OFFSET,2)
+#        LENGTH=LENGTH+4
+        printf "\\ uint32_t\n"
+        printf "\\ OFFSET=%d\n",OFFSET
+        printf "\\ PTR   =%d\n",PTR   
         TMP=substr($2, 0, length($2)-1)
         printf "    c-4byte obj: .%s\n",TMP
+        printf "\\ --------------------------\n"
         list[TMP]=1
     }
     HIT=1
@@ -123,6 +155,7 @@ BEGIN {
         LENGTH=LENGTH+4
         TMP=substr($2, 0, length($2)-1)
         printf "    c-4byte obj: .%s\n",TMP
+        printf "\\ --------------------------\n"
         list[TMP]=1
     }
     HIT=1

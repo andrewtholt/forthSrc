@@ -1,5 +1,10 @@
 #!/usr/bin/awk -f
 
+BEGIN {
+    print "\\ "
+    print "load lib.fth"
+    print "\\ "
+}
 {
     HIT=0
 }
@@ -33,6 +38,10 @@
 /};/ {
     printf "endstruct /%s\n",NAME
     HIT=1
+}
+/#define / {
+    HIT=1
+    print $0
 }
 {
     if (HIT == 0) {
