@@ -2,11 +2,14 @@
 \ Load this once to set up amforth for the first time
 \ 
 
-#include marker.frt
+#require marker.frt
 marker EMPTY
-#include builds.frt
-#include bitnames.frt
-#include bracket-conditional.frt
+#require builds.frt
+#require bitnames.frt
+#require bracket-conditional.frt
+#require synonym.frt
+#require ports-standard.frt
+#require wiring_analog.frt
 
 marker START
 
