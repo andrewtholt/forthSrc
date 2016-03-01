@@ -1,8 +1,8 @@
 
-s" START" find-name [if]
-drop
-START
-[then]
+\ s" START" find-name [if]
+\ drop
+\ START
+\ [then]
 
 marker START
 #require ms.frt
@@ -13,8 +13,6 @@ $02 constant EXTRF
 $01 constant PORF
 
 PORTB 5 portpin: led
-led pin_output
-led low
 
 : tst 
   10 0 do
@@ -23,6 +21,9 @@ led low
 ;
 
 : blinky ( n -- )
+    led pin_output
+    led low
+
     0 do
         led high
         500 ms
