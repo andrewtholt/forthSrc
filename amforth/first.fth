@@ -3,7 +3,8 @@
 \ 
 
 \ #require marker.frt
-marker EMPTY
+\ marker EMPTY
+
 #require builds.frt
 #require bitnames.frt
 #require bracket-conditional.frt

@@ -1,0 +1,17 @@
+
+Starting from a freshly programmed target enter the following:
+
+#include marker.frt
+marker EMPTY
+
+if already programmed:
+
+EMPTY
+marker EMPTY
+
+
+then:
+
+#include ./first.fth
+
+
