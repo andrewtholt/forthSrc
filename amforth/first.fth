@@ -2,8 +2,8 @@
 \ Load this once to set up amforth for the first time
 \ 
 
-#require marker.frt
-marker EMPTY
+\ #require marker.frt
+\ marker EMPTY
 #require builds.frt
 #require bitnames.frt
 #require bracket-conditional.frt
