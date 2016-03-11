@@ -4,14 +4,15 @@ s" POSIX_IPC" environment? 0= abort" POSIX_IPC Not available" drop
 0 value initRun
 -1 value mqd
 -1 value buffer
+8192 constant /buffer
 
 : init
     initRun 0= if
-        s" /STMWatchdog" O_RDWR mq-open abort" mq_open" to mqd
+        s" /Local" O_RDWR mq-open abort" mq_open" to mqd
         -1 to initRun
 
-        1024 allocate abort" Allocate failed." to buffer
-        buffer 1024 erase
+        /buffer allocate abort" Allocate failed." to buffer
+        buffer /buffer erase
     then
 ;
 
@@ -23,7 +24,7 @@ s" POSIX_IPC" environment? 0= abort" POSIX_IPC Not available" drop
     ." Number of waiting messages:" . cr
 
     begin
-        mqd buffer 1024 0 3500 mq-timedrecv .s abort" mq-recv Failed."
+        mqd buffer /buffer 0 3500 mq-timedrecv .s abort" mq-recv Failed."
         buffer swap dump
         ." =====================================" cr
     again
