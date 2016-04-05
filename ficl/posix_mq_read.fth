@@ -7,12 +7,14 @@ s" POSIX_IPC" environment? 0= abort" POSIX_IPC Not available" drop
 
 : init
     initRun 0= if
-\        s" /STMSend" O_RDWR mq-open abort" mq_open" to mqd
         s" /Local" O_RDWR mq-open abort" mq_open" to mqd
         -1 to initRun
 
         1024 allocate abort" Allocate failed." to buffer
         buffer 1024 erase
+
+        mqd MQ_MSGSIZE mq-getattr abort" mq-getattr failed" 
+        ." Max size of a message:" . cr
     then
 ;
 
@@ -20,18 +22,13 @@ s" POSIX_IPC" environment? 0= abort" POSIX_IPC Not available" drop
     init
 
     mqd MQ_CURMSGS mq-getattr abort" mq-getattr failed" 
-
     ." Number of waiting messages:" . cr
 
     begin
-        ." Test" cr
-\        mqd MQ_CURMSGS mq-getattr abort" mq-getattr failed"  0<>
-        -1
-    while
         ." Loop" cr
 
 \        mqd buffer 1024 0 1500 mq-timedrecv abort" mq-recv Failed." .s
-        mqd buffer 1024 mq-recv abort" mq-recv Failed." 
+        mqd buffer 1024 0 mq-recv abort" mq-recv Failed." 
 
         swap
         ." Priority : " . cr
@@ -39,7 +36,7 @@ s" POSIX_IPC" environment? 0= abort" POSIX_IPC Not available" drop
         buffer swap dump
         ." =====================================" cr
         1500 ms
-    repeat
+    again
 
     mqd mq-close abort" mq-close failed."
     buffer free  abort" free failed."
