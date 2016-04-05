@@ -1,0 +1,5 @@
+
+argc @ . cr
+
+bye
+
