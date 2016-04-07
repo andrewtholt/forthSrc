@@ -59,7 +59,7 @@
 : i2c.p>n ( rx_count ptr  m addr -- x1 ... xn )
     dup i2c.begin >r \ rx_count ptr m 
     0 ?do   \ rx_count ptr
-        dup i + \ rx_count ptr ptr+i
+        dup i + cr \ rx_count ptr ptr+i
         c@ i2c.tx
     loop
     drop

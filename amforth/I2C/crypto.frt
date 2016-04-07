@@ -1,6 +1,17 @@
 
 anew CRYPTO
 
+: .s 
+    depth 0= if 
+        ." Empty" 
+    else 
+        depth 1- 0 swap  do 
+            i pick  . $20 emit 
+        -1 +loop 
+        cr 
+    then
+;
+
 $60 constant ATECC
 
 0 value init-run
@@ -129,11 +140,13 @@ $60 constant ATECC
 : get-data
     wake 
     \ count on stack
+    4
+    $91
+    $1d
     $0      \ Addr
     $0      \ Addr
     $0      \ Zone
-    $30     \ Read
-    $30     \ CMD
+    $02     \ CMD
     $05     \ 5 bytes to send
     $60     \ i2c address
     i2c.m>n
@@ -158,4 +171,27 @@ $60 constant ATECC
 
 ;
 
+: send-data ( addr -- )
+    >r
+
+    r> drop
+;
+
+: fred
+
+    $60 buffer c!++ \ i2c address
+    $08 swap c!++    \ 2 bytes to send, i.e. the above. 
+    $03 swap c!++    \ ADDRESS=$30 i.e. cmd register
+    $07 swap c!++    \ packet length
+    $30 swap c!++    \ CMD=Info
+    $00 swap c!++    \ OPCODE=State  
+    $00 swap c!++    \ P2
+    $00 swap c!++    \ P2
+    $03 swap c!++    \ CRC lo
+    $5d swap c!++    \ CRC Hi
+    $04 swap c!++    \ Number of bytes expected
+
+    drop            \ Clean up.
+
+;
 

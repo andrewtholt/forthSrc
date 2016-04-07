@@ -1,19 +1,19 @@
 anew EMPTY
-#require my-timer0.frt
+#include my-timer0.frt
 
 #include builds.frt
+#include synonym.frt
 #include value.frt
 #include bitnames.frt
-#require bracket-conditional.frt
-#require synonym.frt
+#include bracket-conditional.frt
 
-#require ports-standard.frt
-#require dump.frt
-#require buffer.frt
+#include ports-standard.frt
+#include dump.frt
+#include buffer.frt
 
 
 marker I2C
 
-#require i2c.frt
-#require i2c-detect.frt
+#include i2c.frt
+#include i2c-detect.frt
 
