@@ -33,6 +33,20 @@
     loop
 ;
 
+: tst ( -- len false | errno true )
+    clr-errno
+    inBuffer /buffer serialPort read-line nip \ u2 ior
+
+    if \ Failed
+        drop    \ Loose u2
+        errno -1
+    else
+        0
+    then
+
+    
+;
+
 : getReply { | cnt -- }
     10 to cnt
     inBuffer /buffer erase
