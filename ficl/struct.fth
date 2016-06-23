@@ -1,6 +1,9 @@
 ( )
 ( Forth data structures from Forth Dimension UK )
 ( )
+
+.( Loading struct ) cr
+
 : dofield
 does> ( c d )
  dup @  ( c d o )

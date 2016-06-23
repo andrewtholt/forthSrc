@@ -1,5 +1,5 @@
 
-load struct.fth
+load ./struct.fth
 
 4 constant node-list-size
 
@@ -13,6 +13,7 @@ load struct.fth
     does>
         swap cells +
 ;
+
 
 : noop ;
 
@@ -37,13 +38,27 @@ struct
     1 cells field nextState
 endstruct arc
 
+: .arc ( ptr -- )
+    ?dup 0= if
+        ." Empty" cr
+    else
+        dup ." Cause     : " cause     @ . cr
+        dup ." Effect    : " effect    @ . cr
+        dup ." Next      : " nextArc   @ . cr
+            ." Next State: " nextState @ . cr
+    then
+    
+;
+
 : mk-arc
-    create 
-        ['] default-cause ,
-        ['] default-effect ,
-        0 ,
-        0 ,
-    does>
+    here arc allot >r
+    r@ arc erase
+
+    ['] default-cause  r@ cause !
+    ['] default-effect r@ effect !
+    0 r@ nextArc   !
+    0 r@ nextState !
+    r>
 ;
 
 : set-cause ( xt addr -- )
@@ -95,7 +110,10 @@ endstruct arc
 : addToFront ( n head ) 
     dup @ 0= if
         !
-    else
+    else \ n head
+        2dup @   \ n head n p
+        swap set-next   \ n head
+        !
         
     then
 ;
@@ -113,11 +131,12 @@ endstruct arc
     then
 ;
 
-here 4 cells allot constant machine
-mk-arc one
-
-:noname true ; one set-cause
-:noname noop ; one set-effect
-
-1 one set-state
-
+mk-arc value one
+\ here 4 cells allot constant machine
+\ mk-arc one
+\ 
+\ :noname true ; one set-cause
+\ :noname noop ; one set-effect
+\ 
+\ 1 one set-state
+\ 
