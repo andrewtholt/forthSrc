@@ -132,7 +132,6 @@ endstruct arc
 ;
 
 mk-arc value one
-\ here 4 cells allot constant machine
 \ mk-arc one
 \ 
 \ :noname true ; one set-cause
