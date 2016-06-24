@@ -118,6 +118,16 @@ endstruct arc
     then
 ;
 
+: dump-list ( head )
+    dup @ ?dup 0= if
+        ." Empty" cr
+        drop
+    else
+        ." Not Empty" cr
+
+    then
+;
+
 
 : addArc ( state machine  arc  )
     -rot
