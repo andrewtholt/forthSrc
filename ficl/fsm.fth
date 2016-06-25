@@ -114,37 +114,98 @@ endstruct arc
         2dup @   \ n head n p
         swap set-next   \ n head
         !
-        
     then
 ;
 
 : dump-list ( head )
-    dup @ ?dup 0= if
+    @ ?dup 0= if
         ." Empty" cr
-        drop
     else
         ." Not Empty" cr
 
+        begin
+            dup .arc cr
+            get-next ?dup 0=
+        until
     then
 ;
 
-
-: addArc ( state machine  arc  )
-    -rot
-    (state-ptr) dup @ ?dup
-
-    if
-        ." Set" cr
+\ given an arc it will execute the cause, of that return true then,
+\ it will execute the effect and return the next state.
+\ 
+\ A return of < 0 indicates that no state change should take place
+\ 
+: executeArc ( arc -- ns|-1 )
+    dup get-cause ?dup 0<> if 
+        execute if
+            dup get-effect ?dup 0<> if
+                execute
+                get-state
+            else 
+                drop -1
+            then
+        else
+            drop -1
+        then
     else
-        ." Empty" cr 
-
+        drop -1
     then
+;
+
+: execute-node ( head )
+    ?dup 0<> if
+        @
+        begin
+            dup executeArc dup 0< if    \ condition to change state not true
+                drop
+                get-next
+                ?dup 0=
+            else                        \ new state
+                nip
+                dup 0< invert
+            then
+        until
+    then
+;
+
+\ 
+\ e.g. 0 nodes one
+\ 
+: addArc ( state machine arc  )
+    >r      \ 0 nodes
+    swap cells + \ head
+    r> swap addToFront
+;
+
+: dump-machine ( machine )
+    node-list-size 0 do
+        i . 09 emit
+        dup i cells + @ .
+        cr
+    loop
+    drop
+;
+
+\ given the current state and the machine return a pointer to
+\ the head of the lists of arcs
+\ 
+: get-active-node ( state machine -- head )
+    swap cells + 
 ;
 
 mk-arc value one
-\ mk-arc one
-\ 
-\ :noname true ; one set-cause
+:noname true ; one set-cause
+1 one set-state
+one .arc
+
+mk-arc value two
+' null-cause two set-cause
+' noop two set-effect
+0 two set-state
+
+0 nodes one addArc
+0 nodes two addArc
+
 \ :noname noop ; one set-effect
 \ 
 \ 1 one set-state
