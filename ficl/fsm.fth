@@ -157,7 +157,7 @@ endstruct arc
         @
         begin
             dup executeArc dup 0< if    \ condition to change state not true
-                drop
+                swap
                 get-next
                 ?dup 0=
             else                        \ new state
@@ -177,7 +177,7 @@ endstruct arc
     r> swap addToFront
 ;
 
-: dump-machine ( machine )
+: .machine ( machine )
     node-list-size 0 do
         i . 09 emit
         dup i cells + @ .
@@ -193,6 +193,26 @@ endstruct arc
     swap cells + 
 ;
 
+: run-machine ( machine )
+    >r
+    begin
+        ." State is "
+        current-state . cr
+
+        current-state cells r@ + @
+        executeArc dup 0< invert if \ 0>=
+            to current-state
+        else
+            drop
+        then
+
+        1000 ms
+        .s
+        ?key
+    until
+    r> drop
+;
+
 mk-arc value one
 :noname true ; one set-cause
 1 one set-state
@@ -204,7 +224,7 @@ mk-arc value two
 0 two set-state
 
 0 nodes one addArc
-0 nodes two addArc
+1 nodes two addArc
 
 \ :noname noop ; one set-effect
 \ 
