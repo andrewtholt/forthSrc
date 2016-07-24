@@ -1,3 +1,6 @@
+\ 
+\ Join two strings.
+\ 
 -1 value p1
 -1 value n1
 
