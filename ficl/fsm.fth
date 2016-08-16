@@ -110,6 +110,7 @@ endstruct arc
 : addToFront ( n head ) 
     dup @ 0= if
         !
+
     else \ n head
         2dup @   \ n head n p
         swap set-next   \ n head
