@@ -2,15 +2,14 @@
 ( Forth data structures from Forth Dimension UK )
 ( )
 
-.( Loading struct ) cr
-
 : dofield
 does> ( c d )
  dup @  ( c d o )
  swap   ( c o d )
  cell+ @      ( c o s )
  -rot   ( s c o )
- + swap drop \ lose the length here, I always seem to drop this anyway.
+ + swap 
+ drop ( don't often need length )
 ;
 
 : field   ( offset size )
