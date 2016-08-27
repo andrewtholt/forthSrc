@@ -1,5 +1,5 @@
 load struct.fth
-load mydump.fth
+\ load mydump.fth
 
 struct
 2 chars field cmd
@@ -11,11 +11,11 @@ endstruct /cmd
 
 /cmd allocate abort" record alloc" to command
 
-999 openqueue abort" openqueue" to qid
+22 openqueue abort" openqueue" to qid
 
 command qid 0 msg-recv abort" msg-recv"
 
-command /cmd mdump cr cr
+command /cmd dump cr cr
 
 command cmd type cr
 
