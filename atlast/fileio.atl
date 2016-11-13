@@ -4,6 +4,19 @@
 4 constant BIN-FILE
 8 constant CREAT
 
+\ Check in env for fileio
+
+: env-test
+    ?fileio if 
+        cr "fileio present" type cr
+    else
+        cr "No file io configured" type cr
+        abort
+    then
+;
+
+env-test
+
 file tst
 255 string buffer
 
@@ -42,6 +55,7 @@ file tst
 
 
 : main
+    
     write-test
     read-test
 ;
