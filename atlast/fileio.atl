@@ -1,0 +1,49 @@
+
+1 constant READ
+2 constant WRITE
+4 constant BIN-FILE
+8 constant CREAT
+
+file tst
+255 string buffer
+
+: write-test
+    cr
+    "Create file and write to it test" type cr
+
+    "test.txt" READ WRITE or CREAT or tst fopen
+
+    if 
+        "success" type cr
+    else
+        "Fail" type cr
+        abort
+    then
+
+    "This is a test" tst fputs drop
+    "and so is this" tst fputs drop
+
+    tst fclose
+;
+
+: read-test
+    "test.txt" READ tst fopen 0=
+    if
+        "Open for read Failed" type cr
+        abort
+    then
+
+    begin
+        tst buffer fgets 
+    while
+        buffer 0x20 dump cr
+    repeat
+;
+
+
+: main
+    write-test
+    read-test
+;
+
+
