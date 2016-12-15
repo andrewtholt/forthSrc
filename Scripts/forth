@@ -23,6 +23,10 @@ if [ "$FORTH" = "ficl" ]; then
 fi
 
 if [ "$FORTH" = "atlast" ]; then
+    if [ -d "/usr/local/lib/Small" ]; then
+        LD_LIBRARY_PATH=/usr/local/lib/Small
+        export LD_LIBRARY_PATH
+    fi
     rlwrap -n atlast $*
 fi
 
