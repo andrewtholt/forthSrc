@@ -1,0 +1,51 @@
+
+32 constant /name
+32 constant /value
+
+/name string name
+/value string value
+
+
+mkdb constant table
+
+: set
+    token name strcpy
+    token value strcpy
+    table name value add-record
+
+    name /name erase
+    value /value erase
+;
+
+: get
+    token name strcpy
+    table name lookup if
+        abort
+    then
+
+    ?memsafe if
+        0 memsafe
+        value strcpy
+        1 memsafe
+    else 
+        value strcpy
+    then
+
+;
+
+: pub
+    token name strcpy
+    table name publish
+;
+
+: dump-rec
+    cr
+    token name strcpy
+    table name lookup-rec
+    if
+        abort
+    else
+        .record
+    then
+;
+
