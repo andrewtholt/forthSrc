@@ -13,13 +13,16 @@ BEGIN {
     gsub(/[  ]+/," ",n[1])
 
     tmp=n[2]
+    tmp=tmp
+
+    printf ">%s<\n", tmp
 
     gsub(/[  ]+/,"",tmp)
 
     print index(tmp,"immediate")
-    if( index(tmp,"immediate") == 1 ) {
-        print " immediate"
-    } 
+#    if( index(tmp,"immediate") == 1 ) {
+#        print " immediate"
+#    } 
 
     if (length(n[1]) >0 ) {
         printf "\t\":%s ;\"\n",n[1]

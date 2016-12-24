@@ -13,16 +13,3 @@ does> ( ... -- ... )
     ' defer!
 ; immediate
 
-\ : is
-\   state @ if
-\     POSTPONE ['] POSTPONE defer!
-\   else
-\     ' defer!
-\   then ; immediate
-\ 
-\ : action-of
-\  state @ if
-\    POSTPONE ['] POSTPONE defer@
-\  else
-\    ' defer@
-\  then ; immediate
