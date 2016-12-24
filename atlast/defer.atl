@@ -1,4 +1,4 @@
-: defer ( "name" -- )
+: defer ( name -- )
   create ['] abort ,
 does> ( ... -- ... )
   @ execute ;
