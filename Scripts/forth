@@ -10,7 +10,7 @@ if [ $? -ne 0 ]; then
 fi
 
 if [ -z "$FORTH" ]; then
-    FORTH=ficl
+    FORTH=atlast
 fi
 
 if [ "$FORTH" = "ficl" ]; then
