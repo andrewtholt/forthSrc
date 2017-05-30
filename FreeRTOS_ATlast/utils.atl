@@ -1,0 +1,11 @@
+
+\ a b -- b
+: nip
+    swap drop
+;
+
+\ a b -- b a b
+: tuck
+    swap over
+;
+

@@ -1,5 +1,53 @@
 
-: test 
-    "Hello !" type
+here 128 allot constant buffer
+variable init-run
+
+0 init-run !
+
+
+: bt-reset
+    bt_uart "RESET" uart-type
+    bt_uart 0x0d uart-emit
 ;
+
+: bt-flush
+    begin
+        bt_uart ?uart-rx
+    while
+        bt_uart uart-key drop
+    repeat
+;
+
+: bt-getline
+    buffer 128 erase
+
+    bt_uart buffer 128 uart-readline
+;
+
+: init
+    init-run @ 0= if
+        bt_power off
+        bt_reset off
+        bt_power on
+        20 ms
+        bt_reset on
+        -1 init-run !
+    then
+;
+
+: test
+    init
+    bt-reset
+
+    3 0 do 
+        bt_uart buffer 128 uart-readline 0<> if
+            buffer 32 dump
+            cr
+        then
+    
+    loop
+;
+
+
+
 

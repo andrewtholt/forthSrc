@@ -1,0 +1,63 @@
+
+32 constant /name
+32 constant /defn
+
+/name string name
+/defn string defn
+
+
+: set
+    token name strcpy
+    token defn strcpy
+    table name defn add-record
+
+    name /name erase
+    defn /defn erase
+;
+
+: get
+    token name strcpy
+    table name lookup if
+        abort
+    else
+        ?memsafe if
+            0 memsafe
+            defn strcpy
+            1 memsafe
+        else
+            defn strcpy
+        then
+        defn 0
+    then
+;
+
+: pub
+    token name strcpy
+    table name publish
+;
+
+: dump-rec
+    cr
+    token name strcpy
+    table name lookup-rec
+    if
+        abort
+    else
+        .record
+    then
+;
+
+: ?type ( string flag )
+    0= if
+        type
+    then
+;
+
+set QNAME /atlast
+dump-rec QNAME cr cr
+
+init clear
+"Init run" type cr
+
+
+

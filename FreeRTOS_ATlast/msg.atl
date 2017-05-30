@@ -1,0 +1,128 @@
+
+0 memsafe
+
+USB_TASK constant iam
+
+struct
+    cell field sender
+    1 chars field fields
+    8 chars field cmd
+    16 chars field key
+    32 chars field value
+endstruct /msg
+
+variable init_run
+variable out
+
+/msg string cmd-buffer
+/msg string rx-buffer
+
+: init
+	init_run @ 0= if
+        here /msg allot out !
+        out @ /msg erase
+
+        -1 init_run !
+	then
+    clear
+;
+
+
+\ name value
+: mkmsg-set
+    init_run @ if
+        out @ /msg erase
+        out @ value strcpy
+        out @ key strcpy
+        iam qid@ out @ sender !
+        3 out @ fields !
+        "SET"  out @ cmd strcpy
+    then
+;
+
+\ TODO Pass in destination
+\ 
+: send
+    init_run @ if
+        out @  3 qid@ 
+        if
+            "Send Failed" abort"
+        else
+            message!
+        then
+    then
+;
+
+: mkmsg-sub
+    init_run @ if
+        out @ /msg erase
+        out @ key strcpy
+        iam qid@ drop
+
+        out @ 
+        sender !
+
+        2 out @ fields !
+        "SUB"  out @ cmd strcpy
+    then
+;
+
+: mkmsg-unsub
+    init_run @ if
+        out @ /msg erase
+        out @ key strcpy
+        iam qid@ out @ sender !
+        2 out @ fields !
+        "UNSUB"  out @ cmd strcpy
+    then
+;
+
+: mkmsg-get
+    init_run @ if
+        out @ /msg erase
+        out @ key strcpy
+        iam qid@ out @ sender !
+        2 out @ fields !
+        "GET"  out @ cmd strcpy
+    then
+;
+
+: disp
+    init_run @ if
+        out @ /msg dump
+    then
+;
+
+: .struct \ addr --
+    cr
+    >r
+    "Sender :" type r@ sender @ . cr
+    "Fields :" type r@ fields c@ . cr
+    "Command:" type r@ cmd type cr
+    "Key    :" type r@ key type cr
+    "Value  :" type r> value type cr
+    cr
+
+;
+
+( delay -- )
+: msg-get
+    >r
+    rx-buffer /msg erase
+    iam qid@ r> rx-buffer message@
+    dup 0x10 = if
+        rx-buffer /msg dump
+    then
+;
+
+: cmd-eval  \ cmd-addr
+    >r
+    r@ cmd   cmd-buffer strcpy
+    " "   cmd-buffer strcat
+    r@ key   cmd-buffer strcat
+    " "   cmd-buffer strcat
+    r> value cmd-buffer strcat
+    cmd-buffer evaluate
+;
+
+

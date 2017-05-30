@@ -123,6 +123,10 @@ create bmask 0x01 c, 0x02 c, 0x04 c, 0x08 c, 0x10 c, 0x20 c, 0x40 c, 0x80 c,
     addr c!
 ;
 
+: mkmask ( bit_num -- mask )
+    mask + @
+;    
+
 \ create a buffer for n chars/bytes
 \ create a buffer for n chars/bytes
 : cbuffer ( n -- )
