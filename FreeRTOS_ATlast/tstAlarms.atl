@@ -1,0 +1,32 @@
+
+-1 constant annunciator
+
+variable init_run
+0 init_run !
+USB_TASK qid@ constant iam
+
+
+msg_size mkbuffer tx-buffer
+msg_size mkbuffer rx-buffer
+
+: init
+    init_run @ 0= if
+        tx-buffer msg_size erase
+        rx-buffer msg_size erase
+        -1 init_run !
+    then
+;
+
+: msg-send
+    init_run @ 0<>  if
+        tx-buffer ANNUNCIATE_TASK  qid@ message!
+    else
+        cr "Run init" type cr
+    then
+;
+
+: msg-get
+    iam 500 rx-buffer message@
+;
+
+
