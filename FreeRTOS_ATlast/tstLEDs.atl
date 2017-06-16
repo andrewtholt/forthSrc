@@ -1,0 +1,191 @@
+
+-1 constant annunciator
+
+variable init_run
+0 init_run !
+USB_TASK qid@ constant iam
+
+msg_size mkbuffer tx-buffer
+msg_size mkbuffer rx-buffer
+
+0x1d constant value-offset
+
+: init
+    init_run @ 0= if
+        tx-buffer msg_size erase
+        rx-buffer msg_size erase
+        -1 init_run !
+        cr "Init Run." type cr
+    then
+;
+
+: msg-send
+    init_run @ 0<>  if
+        tx-buffer ANNUNCIATE_TASK  qid@ message!
+    else
+        cr "Run init" type cr
+    then
+;
+
+: msg-get
+    iam 500 rx-buffer message@
+;
+
+\ "<STATE>" -- 
+: RED  
+    tx-buffer swap
+    "RED_LED" swap
+    mkmsg-set 
+    msg-send drop
+
+;
+
+\ "<STATE>" -- 
+: GREEN
+    tx-buffer swap
+    "GREEN_LED" swap
+    mkmsg-set
+    msg-send
+;
+
+: GET-GREEN
+    tx-buffer USB_TASK qid@ "GREEN_LED" mkmsg-get
+    msg-send
+    msg-get
+    clear
+    rx-buffer value-offset +
+;
+
+: GET-RED
+    tx-buffer USB_TASK qid@ "RED_LED" mkmsg-get
+    msg-send
+    msg-get
+    clear
+    rx-buffer value-offset +
+;
+
+: red-led-test
+    rx-buffer msg_size erase
+    "Red LED  :" type
+
+    "ON" RED
+    get-red "ON" strcmp 0= if
+        "ON test passed"
+    else
+        "ON test FAILED"
+    then
+    type cr
+
+    500 ms
+
+    rx-buffer msg_size erase
+    "Red LED  :" type
+
+    "OFF" RED
+    get-red "OFF" strcmp 0= if
+        "OFF test passed"
+    else
+        "OFF test FAILED"
+    then
+    type cr
+
+    500 ms
+
+    rx-buffer msg_size erase
+    "Red LED  :" type
+
+    "BLINK:150" RED
+    1000 ms
+    
+    get-red "BLINK:150" strcmp 0= if
+        "BLINK:150 test passed"
+    else
+        "BLINK:150 test FAILED"
+    then
+
+    type cr
+    "OFF" RED
+;
+
+: green-led-test
+    rx-buffer msg_size erase
+    "Green LED:" type
+
+    "ON" GREEN
+    get-green "ON" strcmp 0= if
+        "ON test passed"
+    else
+        "ON test FAILED"
+    then
+    type cr
+
+    500 ms
+
+    rx-buffer msg_size erase
+    "Green LED:" type
+
+    "OFF" GREEN
+    get-green "OFF" strcmp 0= if
+        "OFF test passed"
+    else
+        "OFF test FAILED"
+    then
+    type cr
+
+    rx-buffer msg_size erase
+    "Green LED:" type
+
+    "BLINK:150" GREEN
+    1000 ms
+    
+    get-green "BLINK:150" strcmp 0= if
+        "BLINK:150 test passed"
+    else
+        "BLINK:150 test FAILED"
+    then
+
+    type cr
+    "OFF" GREEN
+;
+
+: led-test
+    init
+    cr "Tests starting" type cr cr
+    red-led-test cr
+    green-led-test cr
+;
+
+: snd-test
+    init
+
+    tx-buffer "TONE" "C7" mkmsg-set msg-send
+    500 ms
+    tx-buffer "TONE" "OFF" mkmsg-set msg-send
+    500 ms
+
+    tx-buffer "TONE" "D7" mkmsg-set msg-send
+    500 ms
+
+    tx-buffer "TONE" "E7" mkmsg-set msg-send
+    500 ms
+
+    tx-buffer "TONE" "G7" mkmsg-set msg-send
+    500 ms
+
+    tx-buffer "TONE" "G7#" mkmsg-set msg-send
+    500 ms
+
+    tx-buffer "TONE" "A7" mkmsg-set msg-send
+    500 ms
+
+    tx-buffer "TONE" "C8" mkmsg-set msg-send
+    500 ms
+
+    tx-buffer "TONE" "OFF" mkmsg-set msg-send
+
+;
+
+
+
+init
+
