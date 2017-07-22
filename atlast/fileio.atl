@@ -1,6 +1,6 @@
 
 1 constant READ
-2 constant WRITE
+3 constant WRITE
 4 constant BIN-FILE
 8 constant CREAT
 
@@ -24,7 +24,7 @@ file tst
     cr
     "Create file and write to it test" type cr
 
-    "test.txt" READ WRITE or CREAT or tst fopen
+    "test.txt" READ WRITE or CREAT or tst fopen 0=
 
     if 
         "success" type cr
@@ -40,7 +40,7 @@ file tst
 ;
 
 : read-test
-    "test.txt" READ tst fopen 0=
+    "test.txt" READ tst fopen 0<>
     if
         "Open for read Failed" type cr
         abort
