@@ -1,8 +1,4 @@
 
-1 constant READ
-2 constant WRITE
-4 constant BIN-FILE
-8 constant CREAT
 
 \ Check in env for fileio
 
@@ -24,30 +20,32 @@ file tst
     cr
     "Create file and write to it test" type cr
 
-    "test.txt" READ WRITE or CREAT or tst fopen
+    "test.txt" "w" tst fopen
 
     if 
-        "success" type cr
-    else
         "Fail" type cr
         abort
+    else
+        "success" type cr
     then
 
-    "This is a test" tst fputs drop
-    "and so is this" tst fputs drop
+    "This is a test " dup strlen tst fwrite drop
+    "and so is this" dup strlen tst fwrite drop
 
     tst fclose
 ;
 
 : read-test
-    "test.txt" READ tst fopen 0=
+    "test.txt" "r" tst fopen 
     if
         "Open for read Failed" type cr
         abort
     then
 
+    buffer 255 erase
+
     begin
-        tst buffer fgets 
+        buffer 255 tst fread
     while
         buffer 0x20 dump cr
     repeat
