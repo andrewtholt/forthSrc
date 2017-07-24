@@ -1,4 +1,10 @@
 
+==== BASE ====
+1 constant READ
+2 constant WRITE
+4 constant BIN-FILE
+8 constant CREAT
+==== BASE ====
 
 \ Check in env for fileio
 
