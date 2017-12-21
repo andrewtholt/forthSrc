@@ -1,0 +1,9 @@
+
+: tst 
+    token dup strlen 0= if
+        "No token" type cr
+    else
+        "And the token is >" type type "<" type cr
+    then
+;
+
