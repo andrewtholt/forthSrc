@@ -273,3 +273,20 @@ create (newline) 1 c, 10 c,
 \ 
 ' \ alias //
 
+: compare  { str1 len1 str2 len2 -- rc }
+
+    len1 len2 = if
+        len1 0 do
+            str1 i + c@
+            str2 i + c@
+            <> if
+                -1 leave
+            then
+        loop 
+        0 
+    else 
+        -1 
+    then
+;
+
+
