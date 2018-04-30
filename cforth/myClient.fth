@@ -16,8 +16,6 @@
 /buffer buffer: in-buffer
 /buffer buffer: out-buffer
 
-
-
 -1 value socket-fd
 create localhost #127 c, 0 c, 0 c, 1 c,
 #10001 constant myclient-port
@@ -33,18 +31,7 @@ create localhost #127 c, 0 c, 0 c, 1 c,
     1+
 ;
 
-
-: init
-    init-run 0= if
-        in-buffer /buffer erase
-        out-buffer /buffer erase
-
-        -1 to init-run
-    then
-;
-
 : open-socket  ( -- )
-\   IPPROTO_IP SOCK_STREAM PF_INET socket dup ?posix-err to socket-fd
    IPPROTO_IP SOCK_STREAM PF_INET socket dup 0= abort" socket"  to socket-fd
 ;
 
@@ -95,12 +82,21 @@ create localhost #127 c, 0 c, 0 c, 1 c,
     response in-buffer swap dump
 ;
 
+: init
+    init-run 0= if
+        in-buffer /buffer erase
+        out-buffer /buffer erase
+
+        open-socket
+        localhost myclient-port connect-socket
+        in-buffer /buffer socket-fd h-read-file
+
+        -1 to init-run
+    then
+;
+
 : test
     init
-
-    open-socket
-    localhost myclient-port connect-socket
-    in-buffer /buffer socket-fd h-read-file
 
     s" ^load sqliteCmds.txt" addcr dup to cmd-len out-buffer swap move
     out-buffer cmd-len socket-fd h-write-file .
