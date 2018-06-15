@@ -15,10 +15,12 @@ uint32_t sizeOfMessage() {
     return ( sizeof( struct cbMqttMessage ));
 }
 // 
-// TODO Do I need some sort of queuing mechanism ?
 void defaultMessageCallback(struct mosquitto *mosq, void *obj,const struct mosquitto_message *message) { 
 //    printf("messageCallback\n");
 
+// If msgFlag is not 0 it means that the last message has not been dealt with,
+// TODO Do I need some sort of queuing mechanism ?
+//
     ((struct cbMqttMessage *)obj)->msgFlag=0xffff;
 
     strcpy(((struct cbMqttMessage *)obj)->topic,(char *)message->topic);
