@@ -9,6 +9,14 @@ bool plcAnd(bool a, bool b) {
     return res;
 }
 
+bool plcAndNot(bool a, bool b) {
+    bool res=false;
+
+    res = a & !b;
+
+    return res;
+}
+
 bool plcOr(bool a, bool b) {
     bool res=false;
 
