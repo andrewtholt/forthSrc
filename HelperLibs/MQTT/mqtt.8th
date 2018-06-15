@@ -1,0 +1,8 @@
+
+"libmosquitto.so.1"  lib libmosquitto
+
+"libmqttcallback.so" lib libhelper
+
+libhelper drop
+
+"N" "sizeOfMessage" func: /mqtt-buffer

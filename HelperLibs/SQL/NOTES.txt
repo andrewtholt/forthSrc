@@ -1,0 +1,9 @@
+
+The following functions need to be implemented
+
+
+sqlite-open
+sqlite-compile
+qlite-fetch
+sqlite-final
+

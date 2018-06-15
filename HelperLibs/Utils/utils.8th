@@ -1,0 +1,12 @@
+
+"libutils.so" lib libutils
+"libc.so.6"   lib libc
+
+libutils drop
+
+"Vb" "fatal"     func: fatalError
+
+"NN" "usleep"    func: usleep
+
+"N"  "athGetKey" func: key
+"N"  "athQKey"   func: ?key

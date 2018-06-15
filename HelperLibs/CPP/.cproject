@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="com.atollic.managedbuild.pctoolschain.gnu.base.778042049">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.atollic.managedbuild.pctoolschain.gnu.base.778042049" moduleId="org.eclipse.cdt.core.settings" name="Default">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration buildProperties="" id="com.atollic.managedbuild.pctoolschain.gnu.base.778042049" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
+					<folderInfo id="com.atollic.managedbuild.pctoolschain.gnu.base.778042049.1992422351" name="/" resourcePath="">
+						<toolChain id="com.atollic.managedbuild.pctoolschain.gnu.base.505527706" name="Atollic Linux PC Tools" superClass="com.atollic.managedbuild.pctoolschain.gnu.base">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.GNU_ELF" id="com.atollic.pctools.managedbuild.target.gnu.platform.base.1278942662" name="Debug Platform" osList="linux,hpux,aix,qnx" superClass="com.atollic.pctools.managedbuild.target.gnu.platform.base"/>
+							<builder id="com.atollic.pctools.managedbuild.target.gnu.builder.base.1392006402" managedBuildOn="false" name="GNU Make Builder.Default" superClass="com.atollic.pctools.managedbuild.target.gnu.builder.base"/>
+							<tool id="com.atollic.managedbuild.pctools.gnu.archiver.base.962512529" name="Archiver" superClass="com.atollic.managedbuild.pctools.gnu.archiver.base"/>
+							<tool id="com.atollic.managedbuild.pctools.gnu.cpp.compiler.base.1634847770" name="C++ Compiler" superClass="com.atollic.managedbuild.pctools.gnu.cpp.compiler.base">
+								<inputType id="com.atollic.managedbuild.pctools.gnu.cpp.compiler.input.1711204889" superClass="com.atollic.managedbuild.pctools.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="com.atollic.managedbuild.pctools.gnu.c.compiler.base.760925198" name="C Compiler" superClass="com.atollic.managedbuild.pctools.gnu.c.compiler.base">
+								<inputType id="com.atollic.managedbuild.pctools.gnu.c.compiler.input.1204644968" superClass="com.atollic.managedbuild.pctools.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="com.atollic.managedbuild.pctools.gnu.c.linker.base.1194213410" name="C Linker" superClass="com.atollic.managedbuild.pctools.gnu.c.linker.base"/>
+							<tool id="com.atollic.managedbuild.pctools.gnu.cpp.linker.base.861768219" name="C++ Linker" superClass="com.atollic.managedbuild.pctools.gnu.cpp.linker.base">
+								<inputType id="com.atollic.managedbuild.pctools.gnu.cpp.linker.input.1283364535" superClass="com.atollic.managedbuild.pctools.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="com.atollic.managedbuild.pctools.gnu.assembler.base.165582604" name="Assembler" superClass="com.atollic.managedbuild.pctools.gnu.assembler.base">
+								<inputType id="com.atollic.managedbuild.pctools.gnu.assembler.input.1621027813" superClass="com.atollic.managedbuild.pctools.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="C++ functions for ficl.null.1844704052" name="C++ functions for ficl"/>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+</cproject>
