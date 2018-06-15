@@ -45,8 +45,6 @@ mqtt-init
 /mqtt-buffer allocate abort" Allocate failed" to mqtt-buffer
 mqtt-buffer /mqtt-buffer erase
 
-s" messageCallback" libhelper dlsym abort" Not found" constant msg-callback
-
 : mqtt-sub { topic tlen -- rc }
     client 0 topic 0 (mqtt-sub)
 ;

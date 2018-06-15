@@ -16,7 +16,7 @@ uint32_t sizeOfMessage() {
 }
 // 
 // TODO Do I need some sort of queuing mechanism ?
-void messageCallback(struct mosquitto *mosq, void *obj,const struct mosquitto_message *message) { 
+void defaultMessageCallback(struct mosquitto *mosq, void *obj,const struct mosquitto_message *message) { 
 //    printf("messageCallback\n");
 
     ((struct cbMqttMessage *)obj)->msgFlag=0xffff;
@@ -34,6 +34,6 @@ void messageCallback(struct mosquitto *mosq, void *obj,const struct mosquitto_me
 //
 void init(struct mosquitto *mosq) {
     printf("MQTT init run.\n");
-    mosquitto_message_callback_set(mosq, messageCallback);
+    mosquitto_message_callback_set(mosq, defaultMessageCallback);
 }
 
