@@ -17,6 +17,17 @@ static int ttyfd = 0;   /* STDIN_FILENO is 0 by default */
 struct termios orig_termios;
 static char cbuf = EMPTY;
 
+struct  {
+    int i;
+} testStruct;
+
+__attribute__ ((__constructor__)) 
+void pre_func(void) {
+    printf("pre_func\n");
+    testStruct.i=0;
+    printf("i=%d\n", testStruct.i);
+}
+
 void fatal(char *message) {
     fprintf(stderr, "fatal error: %s\n", message);
     exit(1);
