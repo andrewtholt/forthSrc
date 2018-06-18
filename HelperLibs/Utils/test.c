@@ -10,6 +10,18 @@ int main() {
     strcpy(path,"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin") ;
 
     char buffer[255];
+    int i=-1;
+
+    printf("Testing constructor\n");
+
+    i = getI();
+    printf("Default i=%d\n",i);
+
+    i++;
+    setI(i);
+
+    printf("After   i=%d\n",getI());
+
 
     rc = expandPath(path, "als", buffer);
     printf("als rc=%d\n", rc);

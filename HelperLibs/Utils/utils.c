@@ -28,6 +28,14 @@ void pre_func(void) {
     printf("i=%d\n", testStruct.i);
 }
 
+void setI(int n) {
+    testStruct.i=n;
+}
+
+int getI() {
+    return testStruct.i;
+}
+
 void fatal(char *message) {
     fprintf(stderr, "fatal error: %s\n", message);
     exit(1);
@@ -308,6 +316,10 @@ int test(int a, int b, int c) {
     printf("sum=%d\n",sum);
 
     return sum;
+}
+
+void testString(char *ptr) {
+    printf("Ptr=%s\n", ptr);
 }
 
 
