@@ -5,22 +5,17 @@
 
 #include "hspread.h"
 
-void dumpSettings() {
-	printf("User    :%s\n",getUser());
-	printf("Server  :%s\n",getServer());
-	printf("\n");
-}
 
 int main() {
 	int rc=0;
     
     char rxMsg[255];
 
-	dumpSettings();
+	dump();
 
 	setUser("tester");
 	setServer("raspberrypi0");
-	dumpSettings();
+	dump();
 
 	rc=SPConnectSimple();
 

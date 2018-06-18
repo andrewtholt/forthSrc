@@ -20,6 +20,15 @@ __attribute__ ((__constructor__)) void preFunc(void) {
     sprintf(spreadSetting.iam,"#%s#%s", spreadSetting.user,spreadSetting.host);
 }
 
+void dump(void) {
+    printf("User    :%s\n",spreadSetting.user );
+    printf("Host    :%s\n",spreadSetting.host );
+    printf("Port    :%d\n",spreadSetting.port );
+    printf("Server  :%s\n",spreadSetting.server );
+    printf("Iam     :%s\n",spreadSetting.iam );
+    printf("\n");
+    
+}
 void setUser(char *u) {
     strncpy(spreadSetting.user,u, MAX_USER_LEN);
     sprintf(spreadSetting.iam,"#%s#%s", spreadSetting.user,spreadSetting.host);

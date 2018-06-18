@@ -36,3 +36,4 @@ int SPRxSimple( char *msg, int len) ;
 int SPTxSimple(char *group, char *msg);
 int SPPollSimple();
 
+void dump();
