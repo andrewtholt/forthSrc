@@ -1,4 +1,10 @@
 -1 value libspreadhelper
+-1 value libspread
+
+s" libspread.so" 1 dlopen ?dup 0= [if] ." no libspread" cr abort [then] to libspread
+
+s" SP_error" libspread dlsym acall: sp-error { i.error -- }
+
 s" libspreadhelper.so" 1 dlopen ?dup 0= [if] ." no libspreadhelper" cr abort [then] to libspreadhelper
 
 s" getUser" libspreadhelper dlsym ?dup 0= [if] ." Not found" cr abort [then]
@@ -22,3 +28,10 @@ s" SPConnectSimple" libspreadhelper dlsym ?dup 0= [if] ." Not found" cr abort [t
 s" dump" libspreadhelper dlsym ?dup 0= [if] ." Not found" cr abort [then]
     acall: sp-dump { --  }
 
+s" SPJoinSimple"  libspreadhelper dlsym acall: sp-join { $.group -- .rc }
+
+s" SPTxSimple" libspreadhelper dlsym acall: sp-tx 
+    { $.group $.message -- .rc }
+
+s" SPRxSimple" libspreadhelper dlsym acall: sp-rx 
+    { i.len i.msg -- .rc }

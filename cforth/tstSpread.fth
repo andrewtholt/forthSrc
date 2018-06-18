@@ -47,5 +47,5 @@ MAX_GROUP_NAME allocate drop to private-group
     message MAX_MESSLEN endian mess_type target_groups num_groups d# 100 sender service_type mbox @
     sp-receive
 
-    s" global" mbox @ sp-leave
+\    s" global" mbox @ sp-leave
 ;
