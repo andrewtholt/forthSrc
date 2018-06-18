@@ -28,10 +28,17 @@ s" SPConnectSimple" libspreadhelper dlsym ?dup 0= [if] ." Not found" cr abort [t
 s" dump" libspreadhelper dlsym ?dup 0= [if] ." Not found" cr abort [then]
     acall: sp-dump { --  }
 
-s" SPJoinSimple"  libspreadhelper dlsym acall: sp-join { $.group -- .rc }
+s" SPJoinSimple"  libspreadhelper dlsym acall: sp-join 
+    { $.group -- i.rc }
+
+s" SPLeaveSimple" libspreadhelper dlsym acall: sp-leave
+    { $.group -- i.rc }
 
 s" SPTxSimple" libspreadhelper dlsym acall: sp-tx 
-    { $.group $.message -- .rc }
+    { $.group $.message -- i.rc }
 
 s" SPRxSimple" libspreadhelper dlsym acall: sp-rx 
-    { i.len i.msg -- .rc }
+    { i.len i.msg -- i.rc }
+
+s" SPPollSimple" libspreadhelper dlsym acall: sp-poll 
+    { -- i.rc }

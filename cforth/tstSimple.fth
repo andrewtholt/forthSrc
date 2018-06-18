@@ -16,7 +16,7 @@ sp-dump
 
 sp-connect err-report drop
 
-\ s" global" sp-join err-report
+s" global" sp-join err-report drop
 
 s" hello" s" global" sp-tx err-report drop
 1024 rx-msg sp-rx err-report
