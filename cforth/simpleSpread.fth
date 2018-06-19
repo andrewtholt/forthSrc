@@ -1,7 +1,8 @@
 -1 value libspreadhelper
 -1 value libspread
 
-s" libspread.so" 1 dlopen ?dup 0= [if] ." no libspread" cr abort [then] to libspread
+s" libspread.so" 1 dlopen to libspread
+    libspread 0= [if] .( Failed to open libspread ) cr abort [then]
 
 s" SP_error" libspread dlsym acall: sp-error { i.error -- }
 
