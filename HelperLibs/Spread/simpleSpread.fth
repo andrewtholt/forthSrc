@@ -1,3 +1,6 @@
+\ Languag: cforth
+\ Simplied spread library access routines
+\ 
 -1 value libspreadhelper
 -1 value libspread
 
