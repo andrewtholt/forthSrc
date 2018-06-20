@@ -1,7 +1,7 @@
 fl simpleSpread.fth
 
 s" cforth" set-user
-s" raspberrypi0" set-server
+\ s" raspberrypi0" set-server
 
 1024 buffer: rx-msg
 
