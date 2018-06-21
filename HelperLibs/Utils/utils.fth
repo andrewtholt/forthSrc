@@ -4,22 +4,22 @@
 .( Loading utils.fth ) cr
 
 -1 value libutils
--1 value libc
+\ -1 value libc
 
 
 s" libutils.so" 1 dlopen to libutils
     libutils 0= [if] .( Failed to open libutils ) cr abort [then]
 
-s" libc.so.6" 1 dlopen to libc
-   libc 0= [if] .( Failed to open libc ) cr abort [then]
+\ s" libc.so.6" 1 dlopen to libc
+\    libc 0= [if] .( Failed to open libc ) cr abort [then]
 
 s" expandPath"  libutils dlsym ?dup 0= [if] ." Not found" cr abort [then]
     acall: expand-path { $.dirList $.file a.buffer -- i.rc }
 
 \ 0 2 s" memDump"     libutils dlsym abort" Not Found" mkfunc dump
 \ 
-s" usleep" libc dlsym ?dup 0= [if] ." Not found" cr abort [then]
-    acall: usleep { i.us -- i.is }
+\ s" usleep" libc dlsym ?dup 0= [if] ." Not found" cr abort [then]
+\    acall: usleep { i.us -- i.is }
     
 \ 1 0 s" sched_yield" libc     dlsym abort" Not Found" mkfunc (yield)
 \ 
