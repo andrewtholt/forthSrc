@@ -14,16 +14,17 @@
 ;
 
 : join-test 
-    32 allocate abort" Allocate" to p1
+\    32 allocate abort" Allocate" to p1
+    32 allocate 0<> if ." Allocate failed" cr abort then to p1
     4 to n1
 
-    s" Test" p1 swap move
-    p1 10 dump
+    s" Test" p1 swap .s move
+\    p1 10 dump
     cr
 
-    p1 n1 s" ing" join
+\    p1 n1 s" ing" join
 
-    10 + dump
+\    10 + dump
 ;
 
 cr
