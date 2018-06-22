@@ -2,6 +2,7 @@
 
 LIB_TARGET="/usr/local/lib"
 CFORTH_TARGET=${LIB_TARGET}/cforth
+CFORTH_HEADER="/usr/local/include"
 
 if [ ! -d $LIB_TARGET ]; then
     echo "Fatal Error:${LIB_TARGET} does not exist"
@@ -14,6 +15,7 @@ fi
 
 echo "Moving libspreadhelper.so"
 sudo mv libspreadhelper.so $LIB_TARGET
+sudo cp hspread.h $CFORTH_HEADER
 sudo ldconfig
 
 if [ ! -d $CFORTH_TARGET ]; then

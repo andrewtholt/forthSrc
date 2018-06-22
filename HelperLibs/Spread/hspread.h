@@ -19,6 +19,10 @@ struct {
     char iam[MAX_USER_LEN+HOST_NAME_MAX+4];
 } spreadSetting;
 
+#ifdef __cplusplus
+extern"C" {
+#endif
+
 char *getUser();
 void setUser(char *u);
 
@@ -37,3 +41,7 @@ int SPTxSimple(char *group, char *msg);
 int SPPollSimple();
 
 void dump();
+
+#ifdef __cplusplus
+}
+#endif
