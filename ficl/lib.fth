@@ -1,4 +1,4 @@
-
+.( loading lib.fth ) cr
 0 constant CPU_UNKNOWN
 1 constant CPU_X86
 2 constant CPU_PPC

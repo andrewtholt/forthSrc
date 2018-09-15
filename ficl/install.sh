@@ -14,3 +14,6 @@ for N in $FILES; do
     echo $N
     cp $N $DEST
 done
+
+echo "Now copy ficlrc.fth to $HOME/.ficlrc.fth"
+
