@@ -139,7 +139,7 @@ does>
 : buffer ( n -- )
 create
      cells allot
- does>
+does>
 ;
 
 : mk-buffer ( size -- addr size )
