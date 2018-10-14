@@ -62,9 +62,16 @@ create hostname #192 c, #168 c, #10 c, #112 c,
    close-socket                    ( )
 ;
 
-#21 constant /buffer
+#64 constant /buffer
 /buffer buffer: op-buffer ( 32 is arbritrary, but should be enough )
 /buffer buffer: ip-buffer 
+
+: addcr ( addr len -- addr len+1 )
+    2dup
+    +
+    $0a swap c!
+    1+
+;
 
 \ compare the given string with ERROR, non-destructively
 \ returns true if matches
@@ -85,12 +92,63 @@ create hostname #192 c, #168 c, #10 c, #112 c,
     then
 ;
 
-0 value connected
+0 value ?connected
 
-: stomp-connect ( -- ) 
+variable ch
+: stomp-readbyte 
+    0 ch !
+    ch 1 socket-fd h-read-file drop ch c@
+;
+
+: tst
+    begin
+        stomp-readbyte dup . $3a emit dup emit cr
+        dup $0a = swap 0= or
+    until
+;
+
+: stomp-readline { addr len delim -- count }
+    addr  len erase
+    len 0 do 
+        stomp-readbyte dup 0= over delim = or if  \ check if 0 or delim
+            drop i leave
+        then
+        addr i + c!
+    loop
+    
+;
+
+: flush-socket
+    begin
+        stomp-readbyte
+        0=
+    until
+;
+
+: connected
+    true to ?connected
+
+    flush-socket
+
+    ." Connected" cr
+;
+
+: error
+    false to ?connected
+
+    ." WTF" cr
+;
+
+
+
+: (stomp-connect)
     #61613 to port
     open-socket 
     hostname port connect-socket
+;
+
+: stomp-connect ( -- ) 
+    (stomp-connect)
 
     " CONNECT" " %s\n" sprintf socket-fd h-write-file drop
     " accept-version:1.1" " %s\n\n" sprintf socket-fd h-write-file drop
@@ -98,50 +156,40 @@ create hostname #192 c, #168 c, #10 c, #112 c,
     op-buffer 4 erase
     op-buffer 1 socket-fd h-write-file drop
 
-    ." Test " .s cr
-    ip-buffer /buffer socket-fd h-read-file drop
+    ip-buffer /buffer $0a stomp-readline 
+    ip-buffer swap evaluate
 
-    ." Test 1" .s cr
+\     ip-buffer /buffer -trailing .s $0a left-parse-string
+\     2swap 2drop 
+\ 
+\     stomp-error if 
+\         ." connect failed" cr
+\         close-socket
+\         0 to connected
+\     then
+\ 
+\     stomp-connected if
+\         ." Connected" cr
+\         -1 to connected
+\     else
+\         0 to connected
+\     then
 
-    ip-buffer /buffer -trailing .s $0a left-parse-string
-    2swap 2drop 
-
-    stomp-error if 
-        ." connect failed" cr
-        close-socket
-        0 to connected
-    then
-
-    stomp-connected if
-        ." Connected" cr
-        -1 to connected
-    else
-        0 to connected
-    then
-
-;
-
-: flush-socket
-    begin
-        ip-buffer /buffer socket-fd h-read-file 
-        ip-buffer /buffer dump
-        0=
-    until
 ;
 
 : stomp-subscribe ( dest len -- )
-    connected if
+    ?connected if
         " SUBSCRIBE" " %s\n" sprintf socket-fd h-write-file drop
         " id:0" " %s\n" sprintf socket-fd h-write-file drop
         " destination:%s\n" sprintf socket-fd h-write-file drop
 
-        " ack:auto" " %s\n\n" sprintf socket-fd h-write-file drop
+\        " ack:auto" " %s\n\n" sprintf socket-fd h-write-file drop
 
         op-buffer 4 erase
-        op-buffer 1 socket-fd h-write-file drop
+        op-buffer 1 socket-fd h-write-file ." op-buffer:" . cr
 
         ip-buffer /buffer erase
-        ip-buffer /buffer socket-fd h-read-file drop
+        ip-buffer /buffer socket-fd h-read-file ." ip-buffer:" . cr
         ip-buffer /buffer dump
     else
         ." Error: Not connected" cr
@@ -149,5 +197,4 @@ create hostname #192 c, #168 c, #10 c, #112 c,
 ;
 
 stomp-connect
-
 
