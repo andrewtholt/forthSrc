@@ -100,6 +100,11 @@ variable ch
     ch 1 socket-fd h-read-file drop ch c@
 ;
 
+: stomp-sendbyte ( byte -- )
+    ch c!
+    ch 1 socket-fd h-write-file drop 
+;
+
 : tst
     begin
         stomp-readbyte dup . $3a emit dup emit cr
@@ -139,22 +144,27 @@ variable ch
     ." WTF" cr
 ;
 
-
-
 : (stomp-connect)
     #61613 to port
     open-socket 
     hostname port connect-socket
 ;
 
+
+: copy-addcr ( addr len --  naddr nlen )
+    op-buffer /buffer erase
+    >r
+    op-buffer r@ move
+    op-buffer r> addcr
+;
+
 : stomp-connect ( -- ) 
     (stomp-connect)
 
-    " CONNECT" " %s\n" sprintf socket-fd h-write-file drop
-    " accept-version:1.1" " %s\n\n" sprintf socket-fd h-write-file drop
-
-    op-buffer 4 erase
-    op-buffer 1 socket-fd h-write-file drop
+    " CONNECT" copy-addcr socket-fd h-write-file drop
+    " accept-version:1.1" copy-addcr socket-fd h-write-file drop
+    $0a stomp-sendbyte
+    $00 stomp-sendbyte
 
     ip-buffer /buffer $0a stomp-readline 
     ip-buffer swap evaluate
@@ -179,14 +189,16 @@ variable ch
 
 : stomp-subscribe ( dest len -- )
     ?connected if
-        " SUBSCRIBE" " %s\n" sprintf socket-fd h-write-file drop
-        " id:0" " %s\n" sprintf socket-fd h-write-file drop
+        " SUBSCRIBE" copy-addcr socket-fd h-write-file drop
+        " ack:auto" copy-addcr socket-fd h-write-file drop
+\        " id:0"      copy-addcr socket-fd h-write-file drop
         " destination:%s\n" sprintf socket-fd h-write-file drop
+\        $0a stomp-sendbyte
+        $0a stomp-sendbyte
+        $00 stomp-sendbyte
 
-\        " ack:auto" " %s\n\n" sprintf socket-fd h-write-file drop
-
-        op-buffer 4 erase
-        op-buffer 1 socket-fd h-write-file ." op-buffer:" . cr
+\        op-buffer 4 erase
+\        op-buffer 1 socket-fd h-write-file ." op-buffer:" . cr
 
         ip-buffer /buffer erase
         ip-buffer /buffer socket-fd h-read-file ." ip-buffer:" . cr
