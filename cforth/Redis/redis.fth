@@ -271,7 +271,14 @@ variable ch
 
             topic $ff bl fill
             ip-buffer topic r@ move
+            
             ip-buffer /buffer $0a redis-readline 1- \ payload
+\ TODO clean up with -trailing
+\ Something like 
+\ ip-buffer $ff -trailing
+\ This should leave : ip-buffer len
+\ on the stack
+\ 
             ip-buffer swap topic r> safe-evaluate if
                 ." Unknown topic." cr
                 2drop
