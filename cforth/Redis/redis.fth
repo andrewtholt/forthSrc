@@ -235,6 +235,18 @@ variable ch
     evaluate . cr
 ;
 
+\ Returns true if the words could not be found
+\ false, at the top and the results of executing teh word.
+
+: safe-evaluate ( addr len -- x0 --xn false|true )
+    $find if
+        execute false
+    else
+        2drop true
+    then
+;
+
+0 value topic-len
 
 : redis-get-message
     ip-buffer /buffer $0a redis-readline drop
@@ -255,10 +267,15 @@ variable ch
             ip-buffer /buffer $0a redis-readline drop \ topic
 
             .s cr
+            >r \ save the topic length
 
-            ip-buffer topic rot move
+            topic $ff bl fill
+            ip-buffer topic r@ move
             ip-buffer /buffer $0a redis-readline 1- \ payload
-            ip-buffer swap topic 255 evaluate
+            ip-buffer swap topic r> safe-evaluate if
+                ." Unknown topic." cr
+                2drop
+            then
 
         else
             ." Nope, not a message." cr
