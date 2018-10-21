@@ -252,7 +252,8 @@ variable ch
     ip-buffer /buffer $0a redis-readline drop
     ip-buffer 20 dump cr
 
-    ip-buffer 1+ 3 evaluate
+    ip-buffer 1+ 3 evaluate \ Skip leading *, and get count.
+                            \ TODO check 1st char actually is a '*'
     ." Number of elements " . cr
 
     ip-buffer /buffer $0a redis-readline 
