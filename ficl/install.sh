@@ -1,7 +1,7 @@
 #!/bin/sh
 DEST=/usr/local/lib/ficl
 
-FILES="dynamic.fth lib.fth struct.fth enum.fth"
+FILES="dynamic.fth lib.fth struct.fth enum.fth utils.fth"
 
 if [ ! -d $DEST ]; then
     echo "Making $DEST"
@@ -14,3 +14,6 @@ for N in $FILES; do
     echo $N
     cp $N $DEST
 done
+
+echo "Now copy ficlrc.fth to $HOME/.ficlrc.fth"
+

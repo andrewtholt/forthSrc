@@ -7,5 +7,7 @@ struct tst {
     uint32_t four;
     uint8_t five;
     int six;
+
+    char test[32];
 };
 

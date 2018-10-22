@@ -1,4 +1,4 @@
-
+.( loading lib.fth ) cr
 0 constant CPU_UNKNOWN
 1 constant CPU_X86
 2 constant CPU_PPC
@@ -139,7 +139,7 @@ does>
 : buffer ( n -- )
 create
      cells allot
- does>
+does>
 ;
 
 : mk-buffer ( size -- addr size )
