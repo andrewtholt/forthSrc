@@ -3,3 +3,5 @@
 cscope.out
 ficl/.gdb_history
 ficl/struct
+*.so
+.gdb_history
