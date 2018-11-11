@@ -190,6 +190,7 @@ variable ch
 \ false, at the top and the results of executing teh word.
 
 : safe-evaluate ( addr len -- x0 --xn false|true )
+    -trailing 1-
     $find if
         execute false
     else
@@ -206,7 +207,7 @@ variable ch
         ." Redis Error" cr
     else 
         safe-evaluate if
-            ." Unknow response" cr
+            ." Unknown response" cr
         then
     then
 ;
@@ -219,14 +220,6 @@ variable ch
     " PING" redis-string
     
     redis-response
-    
-\    ip-buffer /buffer $0a redis-readline drop
-\
-\    ip-buffer c@ [char] - = if
-\        ." PING Error" cr
-\    else
-\        ip-buffer 7 evaluate
-\    then
 ;
 
 : redis-setup
