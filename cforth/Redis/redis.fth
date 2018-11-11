@@ -190,7 +190,7 @@ variable ch
 \ false, at the top and the results of executing teh word.
 
 : safe-evaluate ( addr len -- x0 --xn false|true )
-    -trailing 1-
+    -trailing 
     $find if
         execute false
     else
@@ -198,8 +198,10 @@ variable ch
     then
 ;
 
+\ Response is terminated by cr lf, i.e.
+\ 0x0d 0x0a
 : redis-response 
-    ip-buffer /buffer $0a redis-readline \ len
+    ip-buffer /buffer $0a redis-readline 1- \ len
     ip-buffer swap
     
     over \ addr n addr 
