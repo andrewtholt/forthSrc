@@ -82,6 +82,30 @@ create hostname #192 c, #168 c, #10 c, #112 c,
     1+
 ;
 
+/l wa1+ wa1+ buffer: poll-fd  \ n.fid w.events w.revents
+
+: do-poll  ( ms fid mask -- nfds )
+   swap poll-fd !          ( ms mask )
+   poll-fd la1+ w!         ( ms )
+   0 poll-fd la1+ wa1+ w!  ( ms )   \ returned events
+   1 poll-fd poll          ( nfds ) \ 1 is nfds
+;
+
+: do-poll-in  ( ms fid -- nfds )  1 do-poll  ;
+
+: do-poll-out  ( ms fid -- nfds )  4 do-poll  ;
+
+
+: timed-read  ( adr len fid ms -- actual | -1 )
+   over do-poll-in 1 =  if  ( adr len fid )
+      h-read-file           ( actual )
+   else                     ( adr len fid )
+      3drop -1              ( -1 )
+   then                     ( actual | -1 )
+;
+
+
+
 \ compare the given string with ERROR, non-destructively
 \ returns true if matches
 \ 
@@ -224,28 +248,60 @@ variable ch
     redis-response
 ;
 
+: redis-set-prefix 
+    verbose if
+        ." redis-set-prefix" cr
+    then
+        
+    3 token-count
+    " SET" redis-string
+    " MQTT_PREFIX" redis-string
+    " /home/office" redis-string
+
+    ip-buffer /buffer $0a redis-readline drop
+;
+
+: redis-set-host 
+    verbose if
+        ." redis-set-host" cr
+    then
+        
+    3 token-count
+    " SET" redis-string
+    " MQTT_HOST" redis-string
+    " 192.168.0.65" redis-string
+
+    ip-buffer /buffer $0a redis-readline drop
+;
+
 : redis-setup
     verbose if
         ." redis-setup" cr
     then
 
-    3 token-count
-\    " *3" copy-addcr socket-fd h-write-file drop
-
-    " SET" redis-string
+    redis-set-prefix
+    redis-set-host
     
-\    " $3" copy-addcr socket-fd h-write-file drop
-\    " SET" copy-addcr socket-fd h-write-file drop
+;
 
-    " MQTT_PREFIX" redis-string
-\    " $11" copy-addcr socket-fd h-write-file drop
-\    " MQTT_PREFIX" copy-addcr socket-fd h-write-file drop
-
-    " /home/office" redis-string
-\    " $12" copy-addcr socket-fd h-write-file drop
-\    " /home/office" copy-addcr socket-fd h-write-file drop
-
+: redis-incoming
+    verbose if
+        ." redis-incoming" cr
+    then
+   
     ip-buffer /buffer $0a redis-readline drop
+    ip-buffer 1+ 10 evaluate \ get number of elements.
+    
+    0 do 
+        i . cr
+        ip-buffer /buffer $0a redis-readline 
+        ip-buffer swap type cr
+        
+        ip-buffer /buffer $0a redis-readline 
+        ip-buffer swap type cr
+        ." ============" cr
+    loop
+
 ;
 
 : redis-subscribe
@@ -253,35 +309,12 @@ variable ch
         ." redis-subscribe" cr
     then
 
-    " *2" copy-addcr socket-fd h-write-file drop
+    2 token-count
+    " SUBSCRIBE" redis-string
+    " test" redis-string
+    
+    redis-incoming
 
-    " $9" copy-addcr socket-fd h-write-file drop
-    " SUBSCRIBE" copy-addcr socket-fd h-write-file drop
-
-    " $4" copy-addcr socket-fd h-write-file drop
-    " test" copy-addcr socket-fd h-write-file drop
-
-    ip-buffer /buffer $0a redis-readline drop
-
-    ip-buffer 1+ 10 evaluate \ get number of elements.
-    ." Number of elements " . cr
-
-    ip-buffer /buffer $0a redis-readline 
-    ." Len 1st element " ip-buffer 1+ swap evaluate . cr
-    ip-buffer /buffer $0a redis-readline 
-    09 emit ." [1] " ip-buffer swap type cr
-
-    ip-buffer /buffer $0a redis-readline 
-    ." Len 2nd element " ip-buffer 1+ swap evaluate . cr
-    ip-buffer /buffer $0a redis-readline 
-    09 emit ." [2] " ip-buffer swap type cr
-
-    ip-buffer /buffer $0a redis-readline drop
-    ip-buffer 20 dump cr
-
-    ip-buffer c@ [char] : = if
-        09 emit ." Number:" ip-buffer 1+ 5 evaluate . cr
-    then
 ;
 
 255 buffer: topic
