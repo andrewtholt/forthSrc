@@ -229,16 +229,21 @@ variable ch
         ." redis-setup" cr
     then
 
-    " *3" copy-addcr socket-fd h-write-file drop
+    3 token-count
+\    " *3" copy-addcr socket-fd h-write-file drop
 
-    " $3" copy-addcr socket-fd h-write-file drop
-    " SET" copy-addcr socket-fd h-write-file drop
+    " SET" redis-string
+    
+\    " $3" copy-addcr socket-fd h-write-file drop
+\    " SET" copy-addcr socket-fd h-write-file drop
 
-    " $11" copy-addcr socket-fd h-write-file drop
-    " MQTT_PREFIX" copy-addcr socket-fd h-write-file drop
+    " MQTT_PREFIX" redis-string
+\    " $11" copy-addcr socket-fd h-write-file drop
+\    " MQTT_PREFIX" copy-addcr socket-fd h-write-file drop
 
-    " $12" copy-addcr socket-fd h-write-file drop
-    " /home/office" copy-addcr socket-fd h-write-file drop
+    " /home/office" redis-string
+\    " $12" copy-addcr socket-fd h-write-file drop
+\    " /home/office" copy-addcr socket-fd h-write-file drop
 
     ip-buffer /buffer $0a redis-readline drop
 ;
@@ -346,7 +351,7 @@ variable ch
 
     ?connected if
         redis-setup
-        redis-subscribe
+\        redis-subscribe
     then
 
 \    " PING" copy-addcr socket-fd h-write-file drop
