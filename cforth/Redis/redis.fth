@@ -6,6 +6,8 @@
    -2 throw
 ;
 
+-1 constant verbose
+
 \needs wbsplit  : wbsplit  ( w -- b.low b.high )  ;
 \needs be-w! : be-w!  ( w adr -- )  >r  wbsplit r@ c! r> 1+ c!  ;
 
@@ -152,7 +154,7 @@ variable ch
 ;
 
 : (redis-connect)
-    #16379 to port
+    #9734 to port
     open-socket 
     hostname port connect-socket
 
@@ -167,36 +169,90 @@ variable ch
     op-buffer len 1+ addlf 
 ;
 
-: redis-ping
-    " *1" copy-addcr socket-fd h-write-file drop
-    " $4" copy-addcr socket-fd h-write-file drop
-    " PING" copy-addcr socket-fd h-write-file drop
+\ Given the number of tokens
+\ formats and sends.
+\ 
+: token-count ( n -- )
+    " *%d" sprintf copy-addcr 
+    socket-fd h-write-file drop
+;
+\ 
+\ Format a redis string
+\ and send it on
+\ 
+: redis-string ( addr n -- )
+    dup
+    " $%d\r\n%s" sprintf copy-addcr 
+    socket-fd h-write-file drop
     
-    ip-buffer /buffer $0a redis-readline drop
+;
+\ Returns true if the words could not be found
+\ false, at the top and the results of executing teh word.
 
-    ip-buffer c@ [char] - = if
-        ." PING Error" cr
+: safe-evaluate ( addr len -- x0 --xn false|true )
+    $find if
+        execute false
     else
-        ip-buffer 7 evaluate
+        2drop true
     then
 ;
 
+: redis-response 
+    ip-buffer /buffer $0a redis-readline \ len
+    ip-buffer swap
+    
+    over \ addr n addr 
+    c@ [char] - = if
+        ." Redis Error" cr
+    else 
+        safe-evaluate if
+            ." Unknow response" cr
+        then
+    then
+;
+
+: redis-ping
+    verbose if
+        ." redis-ping" cr
+    then
+    1 token-count
+    " PING" redis-string
+    
+    redis-response
+    
+\    ip-buffer /buffer $0a redis-readline drop
+\
+\    ip-buffer c@ [char] - = if
+\        ." PING Error" cr
+\    else
+\        ip-buffer 7 evaluate
+\    then
+;
+
 : redis-setup
+    verbose if
+        ." redis-setup" cr
+    then
+
     " *3" copy-addcr socket-fd h-write-file drop
 
     " $3" copy-addcr socket-fd h-write-file drop
     " SET" copy-addcr socket-fd h-write-file drop
 
-    " $6" copy-addcr socket-fd h-write-file drop
-    " PREFIX" copy-addcr socket-fd h-write-file drop
+    " $11" copy-addcr socket-fd h-write-file drop
+    " MQTT_PREFIX" copy-addcr socket-fd h-write-file drop
 
-    " $13" copy-addcr socket-fd h-write-file drop
-    " /home/office/" copy-addcr socket-fd h-write-file drop
+    " $12" copy-addcr socket-fd h-write-file drop
+    " /home/office" copy-addcr socket-fd h-write-file drop
 
     ip-buffer /buffer $0a redis-readline drop
 ;
 
 : redis-subscribe
+    verbose if
+        ." redis-subscribe" cr
+    then
+
     " *2" copy-addcr socket-fd h-write-file drop
 
     " $9" copy-addcr socket-fd h-write-file drop
@@ -235,16 +291,6 @@ variable ch
     evaluate . cr
 ;
 
-\ Returns true if the words could not be found
-\ false, at the top and the results of executing teh word.
-
-: safe-evaluate ( addr len -- x0 --xn false|true )
-    $find if
-        execute false
-    else
-        2drop true
-    then
-;
 
 0 value topic-len
 
@@ -335,5 +381,5 @@ variable ch
 ;
 
 
-redis-connect
+\ redis-connect
 
