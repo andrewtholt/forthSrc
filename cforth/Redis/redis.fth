@@ -1,4 +1,4 @@
-\ fl ../../cforth/printf.fth
+
 #100 buffer: abort-msg
 
 : sprintf-abort  ( ? pattern$ -- )
@@ -51,7 +51,7 @@
    /sockaddr sockaddr socket-fd connect  ?posix-err
 ;
 
-create hostname #192 c, #168 c, #10 c, #112 c,
+create hostname #192 c, #168 c, #10 c, #113 c,
 #2020 value port
 
 : probe-port  ( -- )
@@ -65,7 +65,7 @@ create hostname #192 c, #168 c, #10 c, #112 c,
 ;
 
 #64 constant /buffer
-/buffer buffer: op-buffer ( 32 is arbritrary, but should be enough )
+/buffer buffer: op-buffer ( Totally arbritrary, but should be enough )
 /buffer buffer: ip-buffer 
 
 : addlf ( addr len -- addr len+1 )
@@ -95,9 +95,9 @@ create hostname #192 c, #168 c, #10 c, #112 c,
 
 : do-poll-out  ( ms fid -- nfds )  4 do-poll  ;
 
-
 : timed-read  ( adr len fid ms -- actual | -1 )
-   over do-poll-in 1 =  if  ( adr len fid )
+   over do-poll-in ( adr len 1|0 )
+   1 =  if 
       h-read-file           ( actual )
    else                     ( adr len fid )
       3drop -1              ( -1 )
@@ -138,12 +138,12 @@ variable ch
     ch 1 socket-fd h-write-file drop 
 ;
 
-: tst
-    begin
-        redis-readbyte dup . $3a emit dup emit cr
-        dup $0a = swap 0= or
-    until
-;
+\ : tst
+\    begin
+\        redis-readbyte dup . $3a emit dup emit cr
+\        dup $0a = swap 0= or
+\    until
+\ ;
 
 : redis-readline { addr len delim -- count }
     addr  len erase
@@ -155,6 +155,29 @@ variable ch
     loop
     
 ;
+
+0 value char-count
+
+: redis-readline-timed { addr len delim time -- }
+    addr len erase
+    0 to char-count
+    
+    addr len bounds do
+        time socket-fd do-poll-in 0> if 
+            ch 1 socket-fd h-read-file drop ch c@ dup \ char char
+            i c! char-count 1+ to char-count
+            delim = if 
+                addr char-count 2-
+                leave 
+            then
+        else
+            0 dup to char-count 
+            leave
+        then
+    loop
+    
+;
+
 
 : flush-socket
     begin
@@ -226,15 +249,15 @@ variable ch
 \ 0x0d 0x0a
 : redis-response 
     ip-buffer /buffer $0a redis-readline 1- \ len
-    ip-buffer swap
-    
-    over \ addr n addr 
-    c@ [char] - = if
-        ." Redis Error" cr
-    else 
-        safe-evaluate if
-            ." Unknown response" cr
-        then
+        ip-buffer swap
+        
+        over \ addr n addr 
+        c@ [char] - = if
+            ." Redis Error" cr
+        else 
+            safe-evaluate if
+                ." Unknown response" cr
+            then
     then
 ;
 
@@ -283,27 +306,38 @@ variable ch
     redis-set-host
     
 ;
-
+\ 
+\ TODO Version making use of poll, so it doesn't block forever
+\ 
 : redis-incoming
     verbose if
         ." redis-incoming" cr
     then
    
-    ip-buffer /buffer $0a redis-readline drop
-    ip-buffer 1+ 10 evaluate \ get number of elements.
-    
-    0 do 
-        i . cr
-        ip-buffer /buffer $0a redis-readline 
-        ip-buffer swap type cr
+\    ip-buffer /buffer $0a redis-readline drop
+    ip-buffer /buffer socket-fd 1000 timed-read 0 > if
+        ip-buffer c@ [char] * = if
+            bl ip-buffer 2+ c!
+            ip-buffer 1+ 2 evaluate \ get number of elements.
         
-        ip-buffer /buffer $0a redis-readline 
-        ip-buffer swap type cr
-        ." ============" cr
-    loop
+            0 do 
+                i . cr
+                ip-buffer /buffer $0a redis-readline 
+                ip-buffer swap type cr
+            
+                ip-buffer /buffer $0a redis-readline 
+                ip-buffer swap type cr
+                ." ============" cr
+            loop
+        then
+    then
 
 ;
-
+\ 
+\ TODO Change this so that it requires a string on the stack
+\ e.g:
+\ " test" redis-subscribe
+\ 
 : redis-subscribe
     verbose if
         ." redis-subscribe" cr
@@ -311,7 +345,7 @@ variable ch
 
     2 token-count
     " SUBSCRIBE" redis-string
-    " test" redis-string
+    " relay1/power" redis-string
     
     redis-incoming
 
