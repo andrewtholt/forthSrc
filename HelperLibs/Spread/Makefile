@@ -1,4 +1,4 @@
-BINS=test
+BINS=test hspreadTest
 LIBS=-lspread
 all:	hspreadTest
 
