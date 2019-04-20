@@ -1,6 +1,6 @@
 *.o
 *.swp
 cscope.out
-ficl/.gdb_history
+.gdb_history
 ficl/struct
 *.so
