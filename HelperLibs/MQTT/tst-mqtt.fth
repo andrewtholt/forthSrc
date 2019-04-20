@@ -73,7 +73,6 @@ s" utils.fth" sfind nip 0= [if]
 \        ." round and ..." depth . cr
         500 ms
 
-
         mqtt-buffer msg-flag drop w@ if
             .msg
             mqtt-buffer payload drop dup strlen 
