@@ -15,7 +15,8 @@
 255 constant /buffer
 
 : main
-    s" localhost" 1234 socket-connect abort" connect" to sid
+\    s" localhost" 9191 socket-connect abort" connect" to sid
+    s" 192.168.10.124" 9191 socket-connect abort" connect" to sid
 
     /buffer allocate abort" allocate" to in-buffer
     /buffer allocate abort" allocate" to out-buffer
@@ -27,7 +28,7 @@
     O_NONBLOCK or
     >r sid F_SETFL r> fcntl abort" fcntl"
 
-    s" fred" out-buffer swap move
+    s" PING" out-buffer swap move
     0x0a out-buffer 4 + c!
 
     out-buffer 10 dump
