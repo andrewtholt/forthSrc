@@ -15,8 +15,8 @@
 255 constant /buffer
 
 : main
-\    s" localhost" 9191 socket-connect abort" connect" to sid
-    s" 192.168.10.124" 9191 socket-connect abort" connect" to sid
+    s" localhost" 9191 socket-connect abort" connect" to sid
+\    s" 192.168.10.124" 9191 socket-connect abort" connect" to sid
 
     /buffer allocate abort" allocate" to in-buffer
     /buffer allocate abort" allocate" to out-buffer
