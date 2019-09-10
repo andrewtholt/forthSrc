@@ -1,0 +1,114 @@
+var sock
+var ai
+var page
+
+
+\ Let's try to get a page from Google:
+
+net:INET4 net:STREAM net:socket   sock !
+
+: waitfor \  net -- net
+    true 100 net:wait if ;then
+    "waiting\n" .
+    waitfor
+;
+
+
+: server 
+    "127.0.0.1" "9191" net:getaddrinfo null? if 
+        t:err? . cr
+        "Could not use the internet" . cr bye
+    else
+        "connect .... " . cr
+    then
+    ai ! 
+;
+
+: ok? error?  if "FAIL" else "OK" then . cr drop ;
+\ 
+\ server
+\ "connect .... " . cr
+: mk-connect
+    ai @ sock @ net:connect
+    "Connect:" .
+    sock @ ok?
+;
+
+: ping
+    sock @ "PING\n" net:write 2drop
+    sock @ waitfor "" 100 net:read drop nip
+    s:trim
+    "PING:" .
+    "Pong!" cmp 0 = if "OK" else "Fail" then . cr
+;
+
+100 b:new var, buffer
+
+buffer @ b:clear buffer !
+
+: (get) \ string -- response
+    s:trim
+
+    "GET %s\n" s:strfmt 
+
+    sock @ swap 
+    net:write 2drop
+    sock @ waitfor "" 100 net:read drop nip
+    s:trim
+;
+
+: get 
+    "\n" G:parse (get)
+    .
+;
+
+: (set) \ s:value s:name -- s:value
+    s:trim swap s:trim swap
+
+    "SET %s %s\n" s:strfmt
+
+    sock @ swap 
+    net:write 2drop
+    sock @ waitfor "" 100 net:read drop nip
+    s:trim
+
+;
+
+: set 
+    "\n" G:parse
+
+    " " s:/
+
+    1 a:@
+    swap
+    0 a:@
+    nip
+    (set)
+;
+
+
+: main
+    server
+    mk-connect
+    ping
+    .s
+;
+\ 
+\ 
+\ "ok ? " .
+\ 	sock @ ok? cr
+\ 
+\ "try read" . cr
+\ 
+\ \ NOTe: you don't have to specify the size to write; 8th will use the String or
+\ \ Buffer full-size if you don't tell it how much to write 
+\ sock @ "PING\n" net:write
+\ 
+\ \ get the page:
+\ sock @ "" dup page ! 100 net:read drop
+\ 
+\ "Google said: " . cr
+\ . cr 
+\ 
+\ \ bye
+\ 
