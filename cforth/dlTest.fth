@@ -1,5 +1,6 @@
 -1 value libc 
 -1 value librt
+-1 value mqFd
 
 " libc.so.6" 1 dlopen to libc
 
@@ -16,10 +17,12 @@ s" mq_open" librt dlsym abort" mq_open not found" acall: (mq_open) { a.name i.fl
 ;
 
 : mq_open ( addr n flag -- fd )
-    >r null-terminate r> swap .s (mq_open)
+    -rot  \ flag addr n
+    null-terminate \ flag addr
+    (mq_open)
 ;
 
 : test
-    s" /fred" null-terminate 1 swap (mq_open) .
+    s" /fred" 1 mq_open to mqFd
 ;
 
