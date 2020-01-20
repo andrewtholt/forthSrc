@@ -5,8 +5,9 @@
 -1 value librt
 -1 value mqFd
 
-255 constant /tx
-/tx buffer: txBuffer
+255 constant /mqBuffer
+/mqBuffer buffer: txBuffer
+/mqBuffer buffer: rxBuffer
 
 " librt.so" 1 dlopen to librt
 
