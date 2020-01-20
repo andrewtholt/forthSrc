@@ -1,31 +1,48 @@
-
 00 constant O_RDONLY
 01 constant O_WRONLY
 02 constant O_RDWR
 
 -1 value librt
--1 value libc 
+-1 value mqFd
 
-" libc.so.6" 1 dlopen to libc
+255 constant /tx
+/tx buffer: txBuffer
 
 " librt.so" 1 dlopen to librt
 
-s" open" libc dlsym abort" Not Found" acall: fred { $.filename i.flags -- i.fd }
-." Here" cr
+s" mq_open" librt dlsym abort" mq_open not found" acall: (mq_open) { a.name i.flags  -- i.fd }
 
-" /tmp/fred.txt" O_RDONLY fred .s
-errno .
+s" mq_close" librt dlsym abort" mq_close not found" acall: mq_close { i.fd -- i.rc }
 
-" mq_open" librt dlsym abort" Not founs" acall: mq_open { a.name i.len i.oflag -- i.fd }
-." Here" cr
+s" mq_send" librt dlsym abort" mq_send not found" acall: (mq_send) { i.fd a.ptr i.len i.pri -- i.rc }
 
+: 4reverse
+    swap 2swap swap
+;
 
-\ s" /fred" O_WRONLY mq_open .s
+: null-terminate ( addr len -- c-addr )
+    2dup 
+    + 0 swap c!
+    drop
+;
 
-\ 
-\ -1 value libc 
-\ 
-\ " libc.so.6" 1 dlopen to libc
-\ 
-\ s" usleep" libc dlsym abort" Not Found" acall: usleep { i.microseconds -- h.error? }
-\ 
+: mq_open ( addr n flag -- fd )
+    -rot  \ flag addr n
+    null-terminate \ flag addr
+    (mq_open)
+;
+
+: mq_send
+    4reverse (mq_send) .s
+;
+
+: test
+    s" /fred" O_WRONLY mq_open to mqFd
+
+    mqFd s" this is a test" 1 mq_send .s
+
+    0 < if 
+        errno . cr
+    then
+;
+
