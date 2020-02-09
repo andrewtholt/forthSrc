@@ -1,5 +1,14 @@
 
-
+\ 
+\ Compiles into flash and runs on reset
+\ 
+\ for dev comment out compiletoflash
+\ 
+\ To return to base Forth run:
+\ 
+\ eraseflash
+\ 
+compiletoflash
 $40011000 constant GPIOC        \ 
 
 GPIOC $00 + constant GPIOC_CRL 
@@ -48,4 +57,8 @@ $03 constant GPIO_ANALOG
     until
 ;
 
+: INIT
+    blink
+;
 
+compiletoram
