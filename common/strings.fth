@@ -62,6 +62,39 @@
     na nl
 ;
 
+\
+\ Append a charcter to the end of a counted string
+\
+: cappend \ c-addr char --
+    over        \ c-addr char addr
+    dup c@ + 1+ \ c-addr char addr
+    c!
+
+    1 swap c+!
+;
+\ 
+\ Bracket a string with the given char.
+\ e.g.
+\ If the counted string at addr is:
+\ 04 T E S T
+\ Then
+\ addr char " 
+\ Will result in 
+\ 06 " T E S T " 
+\ 
+: quote {: c-addr c :}
+
+    c-addr dup count 1+ move
+
+    1 c-addr c+!
+
+    c c-addr 1+ c!  \ leading char
+
+    c c-addr count + c! \ trailing char
+
+    1 c-addr c+!
+;
+
 
 : append-char ( c addr len -- )
     + c!
@@ -73,9 +106,6 @@
 
 : place-char ( c idx  addr -- )
     swap append-char
-;
-
-: cjoin ( a1 a2 -- a1 )
 ;
 
 

@@ -1,6 +1,5 @@
-            cforth  ficl
+            cforth  ficl    vfxlin
 join.fth    
 mask.fth    X       X    
-README
 string.fth  N/A
-struct.fth  X       X
+struct.fth  X       X       N/A
