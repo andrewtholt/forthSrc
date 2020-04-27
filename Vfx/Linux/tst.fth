@@ -1,7 +1,18 @@
+
+c" lib_base" MacroSet? 0= [if]
+    c" /usr/local/lib/Forth" setmacro lib_base
+[then]
+
+c" common_lib" MacroSet? 0= [if]
+    mc" %lib_base%/common" setmacro common_lib
+[then]
+
 include %vfxpath%/Lib/Lin32/Genio/Serial.fth
+include %common_lib%/strings.fth
 
 0 value init-run
 0 value ?connected
+0 value ?host-connected
 
 128 constant /inbuff
 128 constant /outbuff
@@ -10,14 +21,6 @@ include %vfxpath%/Lib/Lin32/Genio/Serial.fth
 /outbuff buffer: outbuff
 
 SerDev: sd
-
-: cappend \ c-addr char --
-    over        \ c-addr char addr
-    dup c@ + 1+ \ c-addr char addr 
-    c!
-
-    1 swap c+!
-;
 
 : comma-to-space \ addr count -- 
     2dup
@@ -67,6 +70,14 @@ create ser$ \ -- addr
         open-serial-port
         -1 to init-run
     then
+;
+
+: get-line
+    [io
+        sd setIO
+        inbuff /inbuff erase
+        inbuff /inbuff accept 
+    io]
 ;
 
 : set-sta-mode 
@@ -181,11 +192,28 @@ create ser$ \ -- addr
         outbuff [char] " cappend
 
         s" ,8888" outbuff append
-    io]
-    outbuff 64 dump
+
+        outbuff dup zstrlen type crlf$ count type
+        inbuff /inbuff erase
+        inbuff dup /inbuff accept type cr
+        flushkeys
+io]
+        -1 to ?host-connected
     then
 ;
 
+: disconnect-from-host
+    ?host-connected if
+    [io
+        sd setIO
+        s" AT+CIPCLOSE" type crlf$ count type
+        inbuff /inbuff erase
+        inbuff dup /inbuff accept type cr
+        flushkeys
+    io]
+        0 to ?host-connected
+    then
+;
 
 : tst
 init
@@ -233,9 +261,6 @@ io]
         ." Not connected to network" cr
         0 to ?connected
     then
-\    inbuff swap comma-to-space
-\    2dup quote-to-space
-\    evaluate
 ;
 
 : more
