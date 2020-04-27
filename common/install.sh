@@ -18,5 +18,8 @@ else
     echo "... Category directory does not exist ..."
     sudo mkdir -p ${LIB_TARGET}/${CATEGORY}
 fi
+
+echo "... Copying files ..."
 sudo cp *.fth ${LIB_TARGET}/${CATEGORY}
+echo "... done."
 
