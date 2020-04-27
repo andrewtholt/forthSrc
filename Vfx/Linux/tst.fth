@@ -202,6 +202,10 @@ io]
     then
 ;
 
+: itoa \ n --- addr len
+    s>d <# #s #>
+;
+
 : disconnect-from-host
     ?host-connected if
     [io
@@ -213,6 +217,22 @@ io]
     io]
         0 to ?host-connected
     then
+;
+
+: send-data \ addr len ---
+    outbuff /outbuff erase
+
+[io
+    sd setIO
+    s" AT+CIPSEND=" type
+
+    dup . crlf$ count type
+    inbuff dup /inbuff accept type
+    inbuff 2 accept
+
+    type
+io]
+
 ;
 
 : tst
