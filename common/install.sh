@@ -7,10 +7,16 @@ CATEGORY="common"
 
 if [ -d $LIB_TARGET ]; then
     echo "Base exists ..."
-
-    if [ -d ${LIB_TARGET}/${CATEGORY} ]; then
-        echo "... Category directory exists ..."
-        sudo cp *.fth ${LIB_TARGET}/${CATEGORY}
-    fi
+else
+    echo "Base does no exist, creating  ..."
+    sudo mkdir -p $LIB_TARGET
 fi
+
+if [ -d ${LIB_TARGET}/${CATEGORY} ]; then
+    echo "... Category directory exists ..."
+else
+    echo "... Category directory does not exist ..."
+    sudo mkdir -p ${LIB_TARGET}/${CATEGORY}
+fi
+sudo cp *.fth ${LIB_TARGET}/${CATEGORY}
 
