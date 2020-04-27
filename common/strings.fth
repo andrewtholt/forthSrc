@@ -1,27 +1,4 @@
 \
-\ address length --
-\
-: mk-string ( fa len  -- )
-    create
-        len allocate drop to na
-        na fa len move
-\         dup allocate drop dup ,
-\         swap dup , move 
-    does>
-        2@ swap
-;
-
-\ s" Hello," strsave 2value first
-\ s" world!" strsave 2value second
-\ 
-\ Take a string of the form addr len and 
-\ create a counted string at addr2
-\ 
-: place ( str len add2 -- )
-    2dup c!  \ str len add2
-    1+      \ str len add2+1
-    swap move
-;
 \ 
 \ take 2 counted string and appaend addr2 to the end of addr1
 \ There must be sufficient space for the new string at addr1
