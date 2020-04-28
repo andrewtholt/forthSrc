@@ -132,14 +132,12 @@ create ser$ \ -- addr
     s" AT+CWJAP=" outbuff place
     outbuff [char] " cappend
 
-\    s" HoltAtHome4" outbuff append
     essid count outbuff append
     outbuff [char] " cappend
 
     outbuff [char] , cappend
     outbuff [char] " cappend
 
-\    s" anthony050192" outbuff append
     passwd count  outbuff append
     outbuff [char] " cappend
 
