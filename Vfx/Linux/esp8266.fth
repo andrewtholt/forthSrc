@@ -52,7 +52,7 @@ create ser$ \ -- addr
 \ *C   dmesg | tail
 \ *P One of the last few lines tells you the device code,
 \ ** e.g. /dev/ttyUSB0.
- ", /dev/ttyUSB2  115200 baud no parity 8 data 1 stop"
+ ", /dev/ttyUSB0 115200 baud no parity 8 data 1 stop"
 
 
 : open-serial-port \ -- ;
@@ -84,18 +84,28 @@ create ser$ \ -- addr
     io]
 ;
 
+: wait-for-ok
+    begin
+        inbuff /inbuff accept drop
+
+        s" OK"   inbuff dup zstrlen instring 
+        s" FAIL" inbuff dup zstrlen instring or
+        s" ERROR" inbuff dup zstrlen instring or
+        s" ready" inbuff dup zstrlen  instring or
+    until
+    s" OK"    inbuff dup zstrlen instring 0<>
+    s" ready" inbuff dup zstrlen instring 0<> or
+    0=
+;
+
 : set-sta-mode 
     init
     [io
         sd setIO
         flushkeys
         s" AT+CWMODE=1" type crlf$ count type
-        500 ms 
-        inbuff /inbuff erase
-        inbuff /inbuff accept drop
-        flushkeys
+        wait-for-ok
     io]
-    inbuff 32 dump
 ;
 
 : set-tx-mode \ 0|1 --
@@ -104,19 +114,11 @@ create ser$ \ -- addr
         sd setIO
         flushkeys
         s" AT+CIPMODE=1" type crlf$ count type
-        500 ms
-        inbuff /inbuff accept drop
-        inbuff /inbuff accept drop
-
-    io]
-        inbuff 32 dump
-    [io
-        sd setIO
+        wait-for-ok
+        
         flushkeys
-
         s" AT+CIPSEND" type crlf$ count type
-        500 ms
-        flushkeys
+        wait-for-ok
     io]
 ;
 
@@ -135,10 +137,11 @@ create ser$ \ -- addr
     [io
         sd setIO
         s" AT+RESTORE" type crlf$ count type
-        1000 ms 
+        wait-for-ok
         flushkeys
     io]
     0 to ?connected
+    0 to ?host-connected
 ;
 
 : cmd-echo \ true|false --
@@ -156,8 +159,11 @@ create ser$ \ -- addr
         s" ATE0" type crlf$ count type
     io]
     then
-    100 ms
-    flushkeys
+
+    [io
+        sd setIO
+        wait-for-ok
+    io]
 ;
 
 
@@ -213,8 +219,13 @@ create ser$ \ -- addr
 
     inbuff dup zstrlen s" WIFI GOT IP " compare 0= if
         cr ." Connected" cr
+    [io
+        sd setIO
+        wait-for-OK
+    io]
         -1 to ?connected
     then
+
     flushkeys
 ;
 
@@ -222,6 +233,7 @@ create ser$ \ -- addr
     init
 
     ?connected if
+        outbuff /outbuff erase
     [io
         sd setIO
 
@@ -232,16 +244,18 @@ create ser$ \ -- addr
         outbuff [char] , cappend
 
         outbuff [char] " cappend
-        s" 192.168.10.149" outbuff append
+\        s" 192.168.10.149" outbuff append
+        s" 192.168.10.136" outbuff append
         outbuff [char] " cappend
 
         s" ,8888" outbuff append
 
-        outbuff dup zstrlen type crlf$ count type
+        outbuff count type crlf$ count type
         inbuff /inbuff erase
         inbuff dup /inbuff accept type cr
         flushkeys
 io]
+    outbuff count type cr
         -1 to ?host-connected
     then
 ;
@@ -257,7 +271,7 @@ io]
         s" AT+CIPCLOSE" type crlf$ count type
         inbuff /inbuff erase
         inbuff dup /inbuff accept type cr
-        flushkeys
+        wait-for-ok
     io]
         0 to ?host-connected
     then
@@ -280,26 +294,28 @@ io]
 ;
 
 : tst
-init
-    0 cmd-echo
-    1 set-sta-mode
+    init
+    0 cmd-echo abort" Failed to set echo"
+    set-sta-mode abort" Failed to set sta-mode"
 [io
     sd setIO
 
-    s" AT" type crlf$ count type
-    100 ms
-    inbuff /inbuff accept drop
-    inbuff /inbuff erase
-    inbuff /inbuff accept
-io]
     flushkeys
-    inbuff swap dump
+    s" AT" type crlf$ count type
+    wait-for-ok
+\    inbuff /inbuff accept drop
+\    inbuff /inbuff erase
+\    inbuff /inbuff accept
+io]
+\    inbuff 32 dump
+    ." Here" cr
 ;
 
 : fix 
 [io
     sd setIO
     0x0a emit
+    wait-for-ok
 io]
 ;
 
@@ -349,6 +365,6 @@ io]
     tst
     100 ms
     connect-to-network ?connected . cr
-    100 ms
+    500 ms
     connect-to-host    ?host-connected . cr
 ;
