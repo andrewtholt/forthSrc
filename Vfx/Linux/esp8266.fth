@@ -21,6 +21,9 @@ include ap.fth
 /inbuff  buffer: inbuff
 /outbuff buffer: outbuff
 
+0 constant NORMAL_TX_MODE
+1 constant PASSTHROUGH
+
 SerDev: sd
 
 : comma-to-space \ addr count -- 
@@ -95,6 +98,38 @@ create ser$ \ -- addr
     inbuff 32 dump
 ;
 
+: set-tx-mode \ 0|1 --
+    inbuff /inbuff erase
+    [io
+        sd setIO
+        flushkeys
+        s" AT+CIPMODE=1" type crlf$ count type
+        500 ms
+        inbuff /inbuff accept drop
+        inbuff /inbuff accept drop
+
+    io]
+        inbuff 32 dump
+    [io
+        sd setIO
+        flushkeys
+
+        s" AT+CIPSEND" type crlf$ count type
+        500 ms
+        flushkeys
+    io]
+;
+
+: exit-passthrough
+    [io
+        sd setIO
+        s" +++" type
+        1000 ms
+        flushkeys
+    io]
+;
+
+
 : factory-reset
     init
     [io
@@ -127,7 +162,6 @@ create ser$ \ -- addr
 
 
 : connect-to-network
-
     init
     s" AT+CWJAP=" outbuff place
     outbuff [char] " cappend
@@ -143,15 +177,23 @@ create ser$ \ -- addr
 
     inbuff /inbuff erase
 
+    outbuff count type cr
+
     [io
         sd setIO
+        flushkeys
         outbuff count type crlf$ count type
+        100 ms
         inbuff dup /inbuff accept 
         
     io]
+    inbuff 32 dump cr
 
     s" WIFI DISCONNECT" str= if
+        ." disconnect" cr
         500 ms
+
+        inbuff 32 dump cr
 
         inbuff /inbuff erase
 
@@ -295,3 +337,18 @@ io]
     inbuff /inbuff dump
 ;
 
+: test-data
+[io
+    sd setio
+
+    ." Hello there" crlf$ count type
+io]
+;
+
+: setup
+    tst
+    100 ms
+    connect-to-network ?connected . cr
+    100 ms
+    connect-to-host    ?host-connected . cr
+;
