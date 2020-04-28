@@ -11,6 +11,14 @@
     move
 ;
 
+: string: \ addr len --
+    create 
+        here >r    \ a l
+        dup 1+ allot  \ a l
+        r@ place 
+        r> ,
+    does>
+;
 
 : join { addr len addr1 len1 | addr2 len2 -- addr2 len2 }
     len len1 + dup allocate abort" Allocate failed"  to addr2 to len2
