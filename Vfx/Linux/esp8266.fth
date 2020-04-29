@@ -11,9 +11,12 @@ include %vfxpath%/Lib/Lin32/Genio/Serial.fth
 include %common_lib%/strings.fth
 include ap.fth
 
+include cfg.fth
+
 0 value init-run
 0 value ?connected
 0 value ?host-connected
+
 
 128 constant /inbuff
 128 constant /outbuff
@@ -24,7 +27,13 @@ include ap.fth
 0 constant NORMAL_TX_MODE
 1 constant PASSTHROUGH
 
+NORMAL_TX_MODE value ?passthrough
+
 SerDev: sd
+
+: itoa \ n --- addr len
+    s>d <# #s #>
+;
 
 : comma-to-space \ addr count -- 
     2dup
@@ -52,13 +61,13 @@ create ser$ \ -- addr
 \ *C   dmesg | tail
 \ *P One of the last few lines tells you the device code,
 \ ** e.g. /dev/ttyUSB0.
- ", /dev/ttyUSB0 115200 baud no parity 8 data 1 stop"
+ ", /dev/ttyUSB3 115200 baud no parity 8 data 1 stop"
 
 
 : open-serial-port \ -- ;
 \ *G open the serial port for Modbus RTU
   ser$ count R/W sd open-gio if
-    ." Cannot open Rtu port"
+    ." Cannot open ESP01 port"
 \  else
 \    sd setRAW
   then
@@ -73,6 +82,8 @@ create ser$ \ -- addr
     init-run 0= if
         open-serial-port
         -1 to init-run
+        0 to ?connected
+        0 to ?host-connected
     then
 ;
 
@@ -84,42 +95,62 @@ create ser$ \ -- addr
     io]
 ;
 
+: send-to-esp  \ addr len -- flag
+    outbuff place
+    crlf$ count outbuff append
+[io
+    sd setIO
+    flushkeys
+    outbuff count type
+io]
+    
+;
+
+
 : wait-for-ok
     begin
+    [io
+        sd setIO
         inbuff /inbuff accept drop
-
+    io]
         s" OK"   inbuff dup zstrlen instring 
         s" FAIL" inbuff dup zstrlen instring or
         s" ERROR" inbuff dup zstrlen instring or
         s" ready" inbuff dup zstrlen  instring or
+        100 ms
     until
     s" OK"    inbuff dup zstrlen instring 0<>
     s" ready" inbuff dup zstrlen instring 0<> or
     0=
 ;
 
-: set-sta-mode 
-    init
-    [io
-        sd setIO
-        flushkeys
-        s" AT+CWMODE=1" type crlf$ count type
-        wait-for-ok
-    io]
+: ok
+    s" AT" send-to-esp
+    wait-for-ok 
 ;
 
+: set-sta-mode 
+    init
+    s" AT+CWMODE=1" send-to-esp
+    wait-for-ok
+;
+
+64 constant /cmd-assembly
+/cmd-assembly buffer: cmd-assembly
+
 : set-tx-mode \ 0|1 --
-    inbuff /inbuff erase
-    [io
-        sd setIO
-        flushkeys
-        s" AT+CIPMODE=1" type crlf$ count type
-        wait-for-ok
-        
-        flushkeys
-        s" AT+CIPSEND" type crlf$ count type
-        wait-for-ok
-    io]
+    dup to ?passthrough
+    inbuff  /inbuff erase
+    outbuff /outbuff erase
+    cmd-assembly /cmd-assembly erase
+
+    s" AT+CIPMODE=" cmd-assembly place
+    itoa cmd-assembly append
+    cmd-assembly count send-to-esp
+    wait-for-ok
+
+    s" AT+CIPSEND" send-to-esp
+    wait-for-ok 
 ;
 
 : exit-passthrough
@@ -134,12 +165,9 @@ create ser$ \ -- addr
 
 : factory-reset
     init
-    [io
-        sd setIO
-        s" AT+RESTORE" type crlf$ count type
-        wait-for-ok
-        flushkeys
-    io]
+    s" AT+RESTORE" send-to-esp
+    wait-for-ok
+
     0 to ?connected
     0 to ?host-connected
 ;
@@ -148,176 +176,94 @@ create ser$ \ -- addr
     init
     if 
         ." Echo on" cr
-    [io
-        sd setIO
-        s" ATE1" type crlf$ count type
-    io]
+        s" ATE1" send-to-esp
+        wait-for-ok
     else
         ." Echo off" cr
-    [io
-        sd setIO
-        s" ATE0" type crlf$ count type
-    io]
-    then
-
-    [io
-        sd setIO
+        s" ATE0" send-to-esp
         wait-for-ok
-    io]
+    then
 ;
 
 
 : connect-to-network
     init
-    s" AT+CWJAP=" outbuff place
-    outbuff [char] " cappend
 
-    essid count outbuff append
-    outbuff [char] " cappend
+    cmd-assembly /cmd-assembly erase
 
-    outbuff [char] , cappend
-    outbuff [char] " cappend
+    s" AT+CWJAP=" cmd-assembly place
+    cmd-assembly [char] " cappend
 
-    passwd count  outbuff append
-    outbuff [char] " cappend
+    essid count cmd-assembly append
+    cmd-assembly [char] " cappend
 
-    inbuff /inbuff erase
+    cmd-assembly [char] , cappend
+    cmd-assembly [char] " cappend
 
-    outbuff count type cr
+    passwd count  cmd-assembly append
+    cmd-assembly [char] " cappend
 
-    [io
-        sd setIO
-        flushkeys
-        outbuff count type crlf$ count type
-        100 ms
-        inbuff dup /inbuff accept 
-        
-    io]
-    inbuff 32 dump cr
-
-    s" WIFI DISCONNECT" str= if
-        ." disconnect" cr
-        500 ms
-
-        inbuff 32 dump cr
-
-        inbuff /inbuff erase
-
-        [io
-            sd setIO
-            inbuff /inbuff accept drop
-        io]
-    then
-
-    inbuff /inbuff erase
-
-    [io
-        sd setIO
-
-        inbuff /inbuff accept drop
-    io]
-
-    inbuff dup zstrlen s" WIFI GOT IP " compare 0= if
-        cr ." Connected" cr
-    [io
-        sd setIO
-        wait-for-OK
-    io]
-        -1 to ?connected
-    then
-
-    flushkeys
+    cmd-assembly count send-to-esp
+    wait-for-ok 0= to ?connected
 ;
 
 : connect-to-host
     init
 
     ?connected if
-        outbuff /outbuff erase
-    [io
-        sd setIO
+        cmd-assembly /cmd-assembly erase
 
-        s" AT+CIPSTART=" outbuff place
-        outbuff [char] " cappend
-        s" TCP" outbuff append
-        outbuff [char] " cappend
-        outbuff [char] , cappend
+        s" AT+CIPSTART=" cmd-assembly place
+        cmd-assembly [char] " cappend
+        s" TCP" cmd-assembly append
+        cmd-assembly [char] " cappend
+        cmd-assembly [char] , cappend
 
-        outbuff [char] " cappend
-\        s" 192.168.10.149" outbuff append
-        s" 192.168.10.136" outbuff append
-        outbuff [char] " cappend
+        cmd-assembly [char] " cappend
+\        s" 192.168.10.149" cmd-assembly append
+\        s" 192.168.10.136" cmd-assembly append
+        host count cmd-assembly append
+        cmd-assembly [char] " cappend
 
-        s" ,8888" outbuff append
+        s" ,8888" cmd-assembly append
 
-        outbuff count type crlf$ count type
-        inbuff /inbuff erase
-        inbuff dup /inbuff accept type cr
-        flushkeys
-io]
-    outbuff count type cr
-        -1 to ?host-connected
+        cmd-assembly count send-to-esp
+        wait-for-ok 0= to ?host-connected
     then
-;
-
-: itoa \ n --- addr len
-    s>d <# #s #>
 ;
 
 : disconnect-from-host
     ?host-connected if
-    [io
-        sd setIO
-        s" AT+CIPCLOSE" type crlf$ count type
-        inbuff /inbuff erase
-        inbuff dup /inbuff accept type cr
+        s" AT+CIPCLOSE" send-to-esp
         wait-for-ok
-    io]
-        0 to ?host-connected
-    then
+    then    
 ;
 
 : send-data \ addr len ---
     outbuff /outbuff erase
+    ?passthrough PASSTHROUGH = if
 
-[io
-    sd setIO
-    s" AT+CIPSEND=" type
+        ." Passthrough" cr
 
-    dup . crlf$ count type
-    inbuff dup /inbuff accept type
-    inbuff 2 accept
+    [io
+        sd setIO
+        type
+    io]
+    else
+    ." Normal" cr 
+    [io
+        sd setIO
+        s" AT+CIPSEND=" type
 
-    type
-io]
+        dup . crlf$ count type
+        inbuff dup /inbuff accept type
+        inbuff 2 accept
 
+        type
+    io]
+    then
 ;
 
-: tst
-    init
-    0 cmd-echo abort" Failed to set echo"
-    set-sta-mode abort" Failed to set sta-mode"
-[io
-    sd setIO
-
-    flushkeys
-    s" AT" type crlf$ count type
-    wait-for-ok
-\    inbuff /inbuff accept drop
-\    inbuff /inbuff erase
-\    inbuff /inbuff accept
-io]
-\    inbuff 32 dump
-    ." Here" cr
-;
-
-: fix 
-[io
-    sd setIO
-    0x0a emit
-    wait-for-ok
-io]
-;
 
 : get-ip
     init
@@ -362,9 +308,14 @@ io]
 ;
 
 : setup
-    tst
-    100 ms
+    init
+    ok abort" ESP did not respond to AT"
+
     connect-to-network ?connected . cr
-    500 ms
     connect-to-host    ?host-connected . cr
+
+    PASSTHROUGH set-tx-mode 
 ;
+
+
+
