@@ -126,7 +126,7 @@ create ser$ \ -- addr
     [io
         sd setIO
         s" +++" type
-        1000 ms
+        1500 ms
         flushkeys
     io]
 ;
