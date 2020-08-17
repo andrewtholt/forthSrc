@@ -57,6 +57,12 @@ create msg /msg allot
     topic s" 1" $cat
 ;
 
+: ch
+    s" OFF msg place
+    base-topic 
+    topic s" _ALL" $cat
+;
+
 : ch+
     s" OFF" msg place
     base-topic 
@@ -143,6 +149,7 @@ create msg /msg allot
 \ row 1    
 \ 
     ['] ch-  $45 index-table ! 
+    ['] ch   $46 index-table ! 
     ['] ch+  $47 index-table ! 
 \ 
 \ row 2
@@ -233,7 +240,7 @@ create msg /msg allot
 0 value exit-flag
 
 : wb3 
-    uart1-key dup $46 = if
+    uart1-key dup $52 = if
         -1 to exit-flag
     then
     execute-button
