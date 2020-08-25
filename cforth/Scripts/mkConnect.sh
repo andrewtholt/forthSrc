@@ -4,12 +4,20 @@ WIFI_BASE=""
 WIFI_PASSWORD=""
 OP="/dev/tty"
 
+usage() {
+    printf "Usage -h -b <BASE NAME> -p <PASSWORD> -o <OUTPUT_FILE>\n" 
+    exit 2
+}
+
+if [[  $# -eq 0 ]]; then
+    usage
+fi
+
 while getopts b:ho:p: val
 do
     case $val in
         b) WIFI_BASE="$OPTARG";;
-        h) printf "Usage -h -b <BASE NAME> -p <PASSWORD> -o <OUTPUT_FILE>\n" 
-            exit 2;;
+        h) usage ;;
         o) OP="$OPTARG";;
         p) WIFI_PASSWORD="$OPTARG";;
         *) usage;;
