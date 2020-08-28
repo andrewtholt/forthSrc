@@ -1,1 +1,11 @@
 fl connect.fth
+
+wifi-connected? [if]
+    .( Wifi connected ) cr
+    fl ir.fth
+    main
+[else]
+    .( No network ! ) cr
+[then]
+
+
