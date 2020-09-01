@@ -1,5 +1,8 @@
 fl connect.fth
 
+1000 ms
+
+.( Starting ) cr
 wifi-connected? [if]
     .( Wifi connected ) cr
     fl ir.fth
