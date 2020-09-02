@@ -1,3 +1,4 @@
+fl led.fth
 fl connect.fth
 
 1000 ms
@@ -9,6 +10,11 @@ wifi-connected? [if]
     main
 [else]
     .( No network ! ) cr
+    led-on
+    5000 ms
+    led-off
+
+    restart
 [then]
 
 
