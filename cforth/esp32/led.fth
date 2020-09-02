@@ -1,36 +1,26 @@
 
 #02 constant led
-0 value init-run?
+false value led-init-ran?
 
-: gpio-out-off  ( gpio# -- )  0 over gpio-pin!  gpio-is-output  ;
-
-: init
-    init-run? 0= if
-        led gpio-out-off
-        -1 to init-run?
-    then
+: gpio-out-off  ( gpio# -- )  
+    0 over gpio-pin!
+    gpio-is-output
 ;
 
 : led-on
-    init
     1 led gpio-pin!
 ;
 
 
 : led-off
-    init
     0 led gpio-pin!
 ;
 
-: blinky
-    init
-    begin
-        led-on
-        250 ms
-        led-off
-        250 ms
-    again
+: led-init
+    led-init-ran? not if
+        led gpio-out-off
+
+        true to led-init-ran?    
+    then
 ;
-
-
 
