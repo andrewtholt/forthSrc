@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # set -x
 
@@ -10,10 +10,13 @@ if [ $? -ne 0 ]; then
 fi
 
 if [ -z "$FORTH" ]; then
-    FORTH=atlast
+    FORTH=cforth
 fi
 
 if [ "$FORTH" = "ficl" ]; then
+    if [ -z "$FICL_PATH" ]; then
+        export FICL_PATH="/usr/local/lib/ficl:."
+    fi
     if [ "$#" -eq 0 ]; then
         rlwrap -n ficl
     else
@@ -23,13 +26,15 @@ if [ "$FORTH" = "ficl" ]; then
 fi
 
 if [ "$FORTH" = "atlast" ]; then
-    if [ -d "/usr/local/lib/Small" ]; then
-        LD_LIBRARY_PATH=/usr/local/lib/Small
-        export LD_LIBRARY_PATH
-    fi
     rlwrap -n atlast $*
 fi
 
 if [ "$FORTH" = "gforth" ]; then
     gforth $*
 fi
+
+if [ "$FORTH" = "cforth" ]; then
+    DICT=/usr/local/etc/app.dic
+    cforth $DICT $*
+fi
+
