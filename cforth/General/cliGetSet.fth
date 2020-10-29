@@ -34,21 +34,49 @@
     endcase
 ;
 
+\ <set-xt> <get-xt> mk-active-boolean <name>
+\ 
+\ the xt's are of words to run when set or get are called.
+\ If they are 0 this acts like set-boolean
+\ 
+\ e.g: ' get-act ' set-act mk-active-boolean fred
+\ 
 : mk-active-boolean
     create
-        0 ,
+        0 ,     \ value
+        ,     \ SET action
+        ,     \ GET action
     does>
+    \ 
+    \ Stack : <cmd> <addr of value>
+    \ 
     swap
     case
         set of 
+            \ Stack: <addr>
             safe-parse-word $find
             if
-                execute swap !
+                execute 
+                .s cr
+                over !
+            then
+
+            dup cell+ @ ?dup if
+                swap @ swap
+                execute
+            else
+                drop
             then
         endof
 
         get of 
+            dup
             @
+            swap 2 cells + @ ?dup if
+                execute
+            else
+                drop
+            then
         endof
         drop
     endcase
@@ -112,6 +140,17 @@
     endcase
 ;
 
+: set-act
+    ." SET Action" cr
+    ." TOS is " . cr
+;
+
+: get-act
+    ." GET Action" cr
+    ." TOS is " . cr
+;
+
+' get-act ' set-act mk-active-boolean fred
 \ mk-string joe
 \ mk-boolean fred
 \ mk-int bill
