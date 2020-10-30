@@ -1,15 +1,11 @@
 \
 \
 \
-32 constant STRING-LENGTH
 
-fl struct.fth
-fl enum.fth
+.( activeVariables ) cr
 
-1 enum get
-  enum set
-  enum to-stack
-drop
+\needs struct fl struct.fth
+\needs set fl cmds.fth
 
 struct
     cell field data-value
@@ -53,16 +49,18 @@ endstruct struct-boolean
                     if
                         ab-ptr swap execute
                         ab-ptr data-value !
-
-                        ab-ptr set-cb @ execute
+                        ab-ptr set-cb @
+                        ?dup 0<> if set-cb @ execute else drop then
                     then
                 endof
             get of
-                    ab-ptr data-value @ if ." TRUE" else ." FALSE" then cr
 
                     ab-ptr get-cb @ 0<> if
                             ab-ptr dup get-cb @
                             execute
+                            ab-ptr data-value @ if ." TRUE" else ." FALSE" then cr
+                        else
+                            ." ENOPERM" cr
                         then
                         0 ab-ptr data-value!
                 endof
@@ -73,20 +71,3 @@ endstruct struct-boolean
         endcase
         0 to ab-ptr
 ;
-
-: get-act
-    ." get-act" cr
-    .s
-    drop
-;
-
-: set-act
-    ." set-act" cr
-    .s
-    drop
-;
-
-
-\ 0 0 mk-active-boolean fred
-' get-act ' set-act mk-active-boolean fred
-\ s" Holt" fred surname place
