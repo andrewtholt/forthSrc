@@ -51,9 +51,10 @@ endstruct struct-boolean
             set of
                     safe-parse-word $find
                     if
-                        ab-ptr swap
-                        execute
+                        ab-ptr swap execute
                         ab-ptr data-value !
+
+                        ab-ptr set-cb @ execute
                     then
                 endof
             get of
@@ -76,11 +77,13 @@ endstruct struct-boolean
 : get-act
     ." get-act" cr
     .s
+    drop
 ;
 
 : set-act
     ." set-act" cr
     .s
+    drop
 ;
 
 
