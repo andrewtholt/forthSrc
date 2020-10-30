@@ -50,7 +50,14 @@ endstruct struct-boolean
                         ab-ptr swap execute
                         ab-ptr data-value !
                         ab-ptr set-cb @
-                        ?dup 0<> if set-cb @ execute else drop then
+
+                        ab-ptr set-cb @ ." ab-ptr set-cb is " . cr
+                        ?dup 0<>
+                        if
+                            execute
+                        else
+                            drop
+                        then
                     then
                 endof
             get of
@@ -69,5 +76,5 @@ endstruct struct-boolean
             endof
             drop
         endcase
-        0 to ab-ptr
+\        0 to ab-ptr
 ;
