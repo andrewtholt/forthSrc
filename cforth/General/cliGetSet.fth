@@ -11,6 +11,7 @@
 \ e.g: ' get-act ' set-act mk-active-boolean fred
 \
 \ Note: A read is destructive it sets the variable to false after every read.
+\ TODO: Pass address to SET/GET callbacks.
 \
 : mk-active-boolean
     create
