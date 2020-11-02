@@ -1,5 +1,10 @@
 
--1 constant tst.fth
+s" tst.fth" $find [if] 
+    execute 
+[else] 
+    marker tst.fth 
+[then]
+
 
 \needs mk-active-boolean fl activeVariables.fth
 \needs mk-boolean fl variables.fth
