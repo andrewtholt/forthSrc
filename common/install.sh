@@ -1,11 +1,25 @@
 #!/bin/sh
 
-CFORTH_TARGET=${LIB_TARGET}/cforth
+# set -x
 
-if [ ! -d $CFORTH_TARGET ]; then
-    echo "Error:${CFORTH_TARGET} does not exist, creating ..."
-    sudo mkdir -p ${CFORTH_TARGET}
-    echo "... done"
+LIB_TARGET=/usr/local/lib/Forth
+CATEGORY="common"
+
+if [ -d $LIB_TARGET ]; then
+    echo "Base exists ..."
+else
+    echo "Base does no exist, creating  ..."
+    sudo mkdir -p $LIB_TARGET
 fi
 
-sudo cp lib.fth $CFORTH_TARGET
+if [ -d ${LIB_TARGET}/${CATEGORY} ]; then
+    echo "... Category directory exists ..."
+else
+    echo "... Category directory does not exist ..."
+    sudo mkdir -p ${LIB_TARGET}/${CATEGORY}
+fi
+
+echo "... Copying files ..."
+sudo cp *.fth ${LIB_TARGET}/${CATEGORY}
+echo "... done."
+
