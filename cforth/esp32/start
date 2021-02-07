@@ -1,0 +1,20 @@
+fl led.fth
+fl connect.fth
+
+1000 ms
+
+.( Starting ) cr
+wifi-connected? [if]
+    .( Wifi connected ) cr
+    fl ir.fth
+    main
+[else]
+    .( No network ! ) cr
+    led-on
+    5000 ms
+    led-off
+
+    restart
+[then]
+
+

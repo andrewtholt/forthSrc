@@ -29,8 +29,8 @@
    /sockaddr sockaddr socket-fd connect  ?posix-err
 ;
 
-create localhost #127 c, 0 c, 0 c, 1 c,
-#22 constant ssh-port
+create localhost #192 c, #168 c, #10 c, #149 c,
+#5000 constant ssh-port
 
 : probe-ssh  ( -- )
    open-socket
@@ -42,14 +42,13 @@ create localhost #127 c, 0 c, 0 c, 1 c,
 ;
 
 
-( Usage example:
-
-$ cd build/bluez64
--- Put the file test-socket.fth in this directory --
-$ make
-<compilation messages elided>
-$ ./forth test-socket.fth -
-ok probe-ssh
-SSH-2.0-OpenSSH_6.6.1p1 Ubuntu-2ubuntu2.7
-)
-
+\ Usage example:
+\ 
+\ $ cd build/bluez64
+\ -- Put the file test-socket.fth in this directory --
+\ $ make
+\ <compilation messages elided>
+\ $ ./forth test-socket.fth -
+\ ok probe-ssh
+\ SSH-2.0-OpenSSH_6.6.1p1 Ubuntu-2ubuntu2.7
+\ 
