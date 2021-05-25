@@ -51,7 +51,13 @@
    /sockaddr sockaddr socket-fd connect  ?posix-err
 ;
 
-create hostname #192 c, #168 c, #10 c, #113 c,
+4 buffer: hostname
+#127 hostname c!
+#0   hostname 1+ c!
+#0   hostname 2+ c!
+#1   hostname 3 + c!
+
+\ create hostname #192 c, #168 c, #10 c, #149 c,
 #2020 value port
 
 : probe-port  ( -- )
@@ -201,7 +207,8 @@ variable ch
 ;
 
 : (redis-connect)
-    #9734 to port
+\    #9734 to port
+    #6379 to port
     open-socket 
     hostname port connect-socket
 
