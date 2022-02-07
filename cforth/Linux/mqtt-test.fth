@@ -1,5 +1,6 @@
 
 fl ../utils.fth
+fl ./relay-invert.fth
 
 0 value init-run?
 0 variable fred
@@ -33,8 +34,14 @@ fl ../utils.fth
 also mqtt-topics definitions
 
 : /home/office/forth/cmnd/POWER
-    type cr
+    2dup type cr
     1 fred +!
+
+    s" ON" compare if
+        relay-off
+    else
+        relay-on
+    then
 ;
 
 previous definitions
@@ -52,6 +59,7 @@ previous definitions
 
     mqtt-init
 \    led-init
+    relay-init
 
     clear
     mqtt-fd non-blocking
