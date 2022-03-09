@@ -1,13 +1,7 @@
 
-: value    constant ;
+: value create , does> @ ;
 
-: value!   >body ! ;
+: to ' >body ! ;
 
-\ : to       state @ if
-\                [compile] ['] [compile] value!
-\            else
-\                ' value!
-\            then ; immediate
-\ 
-\ 
-\ 
+
+
