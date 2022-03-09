@@ -1,0 +1,13 @@
+fl led.fth
+fl connect.fth
+
+1000 ms
+
+.( Starting ) cr
+wifi-connected? [if]
+    .( No network ! ) cr
+[else]
+    .( Wifi connected ) cr
+[then]
+
+

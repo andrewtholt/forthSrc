@@ -1,8 +1,10 @@
 
-#02 constant led
+\ #02 constant led
+#22 constant led
+
 false value led-init-ran?
 
-: gpio-out-off  ( gpio# -- )  
+: gpio-out-off  ( gpio# -- )
     0 over gpio-pin!
     gpio-is-output
 ;
@@ -20,7 +22,7 @@ false value led-init-ran?
     led-init-ran? not if
         led gpio-out-off
 
-        true to led-init-ran?    
+        true to led-init-ran?
     then
 ;
 

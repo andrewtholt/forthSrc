@@ -16,7 +16,7 @@ uint32_t sizeOfMessage() {
 }
 // 
 void defaultMessageCallback(struct mosquitto *mosq, void *obj,const struct mosquitto_message *message) { 
-//    printf("messageCallback\n");
+    printf("messageCallback\n");
 
 // If msgFlag is not 0 it means that the last message has not been dealt with,
 // TODO Do I need some sort of queuing mechanism ?
@@ -35,7 +35,7 @@ void defaultMessageCallback(struct mosquitto *mosq, void *obj,const struct mosqu
 // default behaviour is to fill out the cbMqttMessage structure.
 //
 void init(struct mosquitto *mosq) {
-    printf("MQTT init run.\n");
+    printf("MQTT init has run.\n");
     mosquitto_message_callback_set(mosq, defaultMessageCallback);
 }
 

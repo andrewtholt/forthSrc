@@ -1,8 +1,8 @@
 
 
-: server$ " 192.168.10.124" ;  
+: server$ " 192.168.10.124" ;
 
-: stub-topic " /home/ir/row" ;
+\ : stub-topic " /home/ir/row" ;
 
 mqtt-start
 

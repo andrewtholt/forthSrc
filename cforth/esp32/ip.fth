@@ -1,0 +1,5 @@
+
+: ifconfig 
+    ipaddr@
+    .ipaddr
+;

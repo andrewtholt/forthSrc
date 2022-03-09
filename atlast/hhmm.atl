@@ -1,0 +1,15 @@
+
+
+
+
+"11:43" constant now
+
+
+: hhmm \ string -- minutes
+    ":" strtok  \ $hh
+    evaluate abort \ hh
+    60 *
+    0 ":" strtok \ $mm
+    evaluate abort +
+;
+

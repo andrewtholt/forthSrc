@@ -2,7 +2,7 @@
 
 : wifi-on  ( -- )
    2 wifi-opmode!   \ AP mode
-   .ssid  space  ***REMOVED***
+   .ssid  space  ipaddr@ .ipaddr
 ;
 
 #0 constant ERR_OK              \ No error, everything OK.

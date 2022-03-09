@@ -1,0 +1,11 @@
+
+.( Setup wifi ... ) cr
+fl wifi-on
+.( ... done) cr
+.( Setup MQTT ... ) cr
+fl mqtt-settings
+.( ... done) cr
+
+.( IP tools ) cr
+fl ip.fth
+.( ... done) cr

@@ -23,25 +23,25 @@
    then
 ;
 
-[ifndef] cscount                                                                       
-: cscount  ( adr -- adr len )                                                          
-   dup                               ( adr cur-adr )                                   
-   begin  dup c@  while  1+  repeat  ( adr end-adr )                                   
-   over -                            ( adr len )                                       
-;                                                                                      
-[then]                                                                                 
-: ?posix-err  ( n -- )                                                                 
-   0<  if                                                                              
-      \ EALREADY is not really a problem                                               
-      errno  dup #114 =  if  drop exit  then  ( n )                                    
-      ." Syscall error " dup .d               ( n )                                    
-      strerror cscount type                   ( )                                      
-      cr                                                                               
-      abort                                                                            
-   then                                                                                
-;                                                                                      
-                                                                                       
-: connect-socket ( 'ip port -- )                                                       
+[ifndef] cscount
+: cscount  ( adr -- adr len )
+   dup                               ( adr cur-adr )
+   begin  dup c@  while  1+  repeat  ( adr end-adr )
+   over -                            ( adr len )
+;
+[then]
+: ?posix-err  ( n -- )
+   0<  if
+      \ EALREADY is not really a problem
+      errno  dup #114 =  if  drop exit  then  ( n )
+      ." Syscall error " dup .d               ( n )
+      strerror cscount type                   ( )
+      cr
+      abort
+   then
+;
+
+: connect-socket ( 'ip port -- )
    sockaddr /sockaddr '0' fill ( 'ip port )
 
    \ Linux and LWIP have different defs for sockaddr:

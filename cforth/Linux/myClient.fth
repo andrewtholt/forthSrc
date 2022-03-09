@@ -18,7 +18,7 @@
 
 -1 value socket-fd
 create localhost #127 c, 0 c, 0 c, 1 c,
-#10001 constant myclient-port
+#10002 constant myclient-port
 
 : be-w!   ( w adr -- )
     >r  wbsplit  r@ c!  r> 1+ c!

@@ -1,0 +1,198 @@
+\ 
+\ Send AT commands to an esp8266 attached to a serial port.
+\ 
+variable init-run
+0 init-run !
+
+255 constant /buffer
+
+/buffer string in-buffer
+/buffer string out-buffer
+32 string scratch
+variable port
+
+
+: crlf ( addr -- addr )
+    dup dup \ addr addr addr 
+    strlen  \ addr addr n
+    +       \ addr addr-end
+    dup     \ addr addr-end addr-end
+    0x0d swap c!    \ addr addr-end
+    1+ 0x0a swap c!
+;
+
+
+: at-cmd ( addr delay -- )
+    swap
+    dup strlen port @ fd-write . cr
+
+    ?dup if 
+        ms
+    then
+
+    in-buffer /buffer port @ fd-read dup . cr
+    in-buffer swap dump
+
+;
+
+: esp-reset
+    "ATE+RST\r\n"  500 at-cmd
+;
+\
+\ enable echo 
+\ returns fail flag.
+\
+: enable-echo
+    "ATE1" crlf 0 at-cmd
+    in-buffer "OK" strstr 0=
+;
+\
+\
+\ returns fail flag.
+\
+: disable-echo
+    "ATE0" crlf 0 at-cmd
+    in-buffer "OK" strstr 0=
+;
+
+\
+\ Status check
+\
+\ returns fail flag.
+\
+: esp-status
+    "AT" crlf 0 at-cmd
+
+    in-buffer "OK" strstr 0=
+;
+
+: AT+UART_CUR?
+    "AT+UART_CUR?" crlf 0 at-cmd
+;
+
+: set-station-mode
+    "AT+CWMODE_CUR=1" crlf 0 at-cmd
+    in-buffer "OK" strstr 0=
+;
+
+: get-station-mode
+    "AT+CWMODE_CUR?" crlf 50 at-cmd
+    in-buffer ":" strstr ?dup if
+        1+ strint nip
+    else
+        0
+    then
+;
+
+: esp-version
+    "AT+GMR" crlf 100 at-cmd
+;
+
+: get-ap
+    "AT+CWJAP_CUR?" crlf 100 at-cmd
+;
+
+: ap-connect ( ssid passwd -- )
+    "AT+CWJAP_CUR=\"" out-buffer strcpy
+
+    swap out-buffer strcat
+    "\",\"" out-buffer strcat
+    out-buffer strcat
+    "\"\r\n" out-buffer strcat
+
+    out-buffer 48 dump
+
+    out-buffer 500 at-cmd
+
+\    in-buffer /buffer erase
+\    in-buffer /buffer dump
+
+    in-buffer "OK" strstr 0=
+;
+
+: ap-disconnect
+    "AT+CWQAP\r\n" 50 at-cmd
+    0 init-run !
+;
+
+: ?ap-connected 
+    in-buffer "No AP" strstr 0<>
+;
+
+
+: get-ip
+    "AT+CIFSR\r\n" 50 at-cmd in-buffer type
+
+;
+
+: port-connect ( ip port -- flag )
+    "AT+CIPSTART=\"TCP\",\"" out-buffer strcpy
+
+    swap out-buffer strcat
+
+    "\",%ld\r\n" scratch strform
+
+    scratch out-buffer strcat
+
+    out-buffer /buffer dump
+    out-buffer 50 at-cmd
+
+    in-buffer "CONNECT" strstr 0=
+;
+
+: port-disconnect ( -- )
+    "AT+CIPCLOSE\r\n" 0 at-cmd
+;
+
+
+: enter-passthrough
+    "AT+CIPMODE=1\r\n" 50 at-cmd
+
+    "AT+CIPSEND\r\n" 50 at-cmd
+;
+
+: exit-passthrough
+    "+++" 3 port @ fd-write drop
+    1100 ms
+;
+
+\ "
+
+"HoltAtHome4" constant SSID
+"anthony050192" constant PASSWORD
+"192.168.10.124" constant SERVER
+9191 constant SERVER_PORT
+
+: init
+    init-run @ 0= if
+        "/dev/ttyUSB0" 0 open-serial-port dup 0< if
+            "Failed to open serial port\n" type
+            abort
+        else
+            port !
+        then
+        port @ flush-serial-port
+
+        disable-echo abort
+        esp-status abort
+
+        get-station-mode 1 <> if
+            set-station-mode
+        then
+        SSID PASSWORD ap-connect abort
+        SERVER SERVER_PORT port-connect abort
+        \ set passthrough
+        enter-passthrough
+        \ done
+        -1 init-run !
+    then
+;
+
+: de-init
+    exit-passthrough
+    ap-disconnect
+    port close-serial-port
+;
+
+
+
