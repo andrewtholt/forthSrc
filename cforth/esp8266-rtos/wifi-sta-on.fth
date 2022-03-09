@@ -1,10 +1,10 @@
-fl app.fth
+fl ap.fth
 
 \ Number of milliseconds to wait for connection, irrespective of retries
 #4000 to wifi-timeout
 
 \ Retries: -1 for unlimited, 0 for none, otherwise that many
-5 value wifi-#retries
+-1 value wifi-#retries
 
 0 value wifi-storage  \ 0 for FLASH, 1 for RAM
 

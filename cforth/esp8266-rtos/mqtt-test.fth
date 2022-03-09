@@ -45,7 +45,7 @@ also mqtt-topics definitions
 previous definitions
 
 
-: init
+: mqtt-init
     init-run? 0= if
         mqtt-start
         0 " /home/office/forth/cmnd/POWER" 1 #1235 mqtt-subscribe
@@ -53,9 +53,9 @@ previous definitions
     then
 ;
 
-: run
+: mqtt-run
 
-    init
+    mqtt-init
     led-init
 
     clear

@@ -4,6 +4,7 @@ fl utils.fth
 .( Starting wifi ) cr
 
 fl wifi.fth
+fl wifi-sta-on.fth
 
 wifi-station-on 
 

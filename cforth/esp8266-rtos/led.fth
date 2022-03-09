@@ -1,6 +1,10 @@
 
 #00 constant relay
 #02 constant led
+#14 constant btn
+
+true value local-state
+
 false value led-init-ran?
 
 : gpio-out-off  ( gpio# -- )
@@ -33,6 +37,7 @@ false value led-init-ran?
     led-init-ran? not if
         led gpio-out-on
         relay gpio-out-off
+        btn gpio-is-input-pullup  
 
         true to led-init-ran?
     then
