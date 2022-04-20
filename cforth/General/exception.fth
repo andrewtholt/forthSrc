@@ -1,5 +1,7 @@
 
-: t1 evaluate ;
+: t1 
+    evaluate 
+;
 
 
 : tst

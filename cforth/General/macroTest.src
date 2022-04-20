@@ -1,0 +1,13 @@
+<#define FOO|relay>
+<#define BAR|a message.>
+<#define BOARD|ESP8266_RELAY>
+
+<#ifeq <#BOARD>|ESP8266_RELAY>
+This is output.
+<#else>
+This is not output.
+<#endif>
+
+: iam s" <#BOARD>" ;
+
+
