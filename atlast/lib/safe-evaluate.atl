@@ -1,0 +1,13 @@
+\
+\ If the word named by the string aon TOS exists, then run it
+\ otherwise abort
+
+: safe-evaluate
+    find if
+        execute
+    else
+        "NOT Found\n" type
+        abort
+    then
+;
+
